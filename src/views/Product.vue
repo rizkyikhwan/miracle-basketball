@@ -25,7 +25,7 @@
       <div class="row">
         <div class="col-md-6">
           <h2>All Products</h2>
-          <div class="d-flex align-items-center">
+          <div class="d-flex">
             <div class="input-group flex-nowrap mb-3">
               <input
                 v-model="search"
@@ -39,40 +39,20 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6 d-flex align-items-center">
-          <div class="col">
+        <div class="col-md-6 d-flex align-items-end">
+          <div class="col filterBrand">
             <div class="row">
-              <div class="col-12">
-                <p>Category</p>
-              </div>
-              <div class="btn-group" data-toggle="buttons">
-                <div class="col-2.4">
-                  <label class="category-list active">
-                    <input type="radio" v-model="brand" value="All" /> All
-                  </label>
-                </div>
-                <div class="col-2.4">
-                  <label class="category-list">
-                    <input type="radio" v-model="brand" value="Nike" /> Nike
-                  </label>
-                </div>
-                <div class="col-2.4">
-                  <label class="category-list">
-                    <input type="radio" v-model="brand" value="Adidas" /> Adidas
-                  </label>
-                </div>
-                <div class="col-2.4">
-                  <label class="category-list">
-                    <input type="radio" v-model="brand" value="Air Jordan" />
-                    Air Jordan
-                  </label>
-                </div>
-                <div class="col-2.4">
-                  <label class="category-list">
-                    <input type="radio" v-model="brand" value="Under Armour" /> Under Armour
-                  </label>
-                </div>
-              </div>
+              <vs-select v-model="brand" >
+                <vs-option label="All" value="All"> All </vs-option>
+                <vs-option label="Nike" value="Nike"> Nike </vs-option>
+                <vs-option label="Adidas" value="Adidas"> Adidas </vs-option>
+                <vs-option label="Air Jordan" value="Air Jordan">
+                  Air Jordan
+                </vs-option>
+                <vs-option label="Under Armour" value="Under Armour">
+                  Under Armour
+                </vs-option>
+              </vs-select>
             </div>
           </div>
         </div>
@@ -108,8 +88,6 @@ import AllProduct from "@/components/AllProduct.vue";
 import NotFound from "@/components/SearchNotFound.vue";
 import axios from "axios";
 import gsap from "gsap";
-import $ from "jquery";
-
 export default {
   name: "Product",
   components: {
@@ -128,8 +106,10 @@ export default {
   },
   methods: {
     async searchAllProduct() {
-      const response =  await axios.get("http://localhost:3000/products?q=" + this.search)
-        this.allproducts = response.data;
+      const response = await axios.get(
+        "http://localhost:3000/products?q=" + this.search
+      );
+      this.allproducts = response.data;
     },
     beforeEnter: function (el) {
       (el.style.opacity = 0), (el.style.transform = "translateY(25px)");
@@ -151,7 +131,7 @@ export default {
     async allProducts() {
       const response = await axios.get("http://localhost:3000/products");
       this.allproducts = response.data;
-    }
+    },
   },
   mounted() {
     // Best Seller
@@ -161,11 +141,6 @@ export default {
     this.allProducts();
 
     this.searchAllProduct();
-
-    $(".category-list").on("click", function () {
-      $(".category-list").removeClass("active");
-      $(this).addClass("active");
-    });
   },
   computed: {
     filterProductsByCategory() {
@@ -207,26 +182,40 @@ h2 {
   border-color: #00bfa6;
 }
 
-.category-list {
-  border: 1.5px solid #00bfa6;
-  background-color: #fff;
-  padding: 1px 10px;
-  margin-left: 10px;
-  margin-bottom: 10px;
-  border-top-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  box-shadow: inset 0 0 0 0 #00bfa6;
-  transition: all 0.5s ease-out;
+.title-category {
+  margin-right: 10px;
+  margin-top: 10px;
 }
 
-.category-list:hover {
-  background-color: #00bfa6;
-  box-shadow: inset 0 100px 0 0 #00bfa6;
-  color: #fff;
+.filterBrand {
+  display: flex;
+  justify-content: end;
+  margin-bottom: 15px;
 }
 
 .active {
   background-color: #00bfa6;
   color: #fff;
+}
+
+@media (max-width: 992px) {
+  .search[type="search"] {
+    width: 100%;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 25px;
+    font-size: 16px;
+    background-color: #fff;
+    padding: 10px 20px 10px 40px;
+    transition: width 0.4s ease-in-out;
+  }
+}
+
+@media (max-width: 768px) {
+  .filterBrand {
+      display: flex;
+      justify-content: start;
+      margin-bottom: 10px;
+    }
 }
 </style>

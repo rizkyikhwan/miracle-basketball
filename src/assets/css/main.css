@@ -1,0 +1,24 @@
+#app {
+  /* font-family: "Montserrat", sans-serif; */
+  font-family: "Saira Semi Condensed", sans-serif;
+  overflow: hidden;
+}
+
+.line {
+  position: relative;
+  width: 75px;
+  height: 2.5px;
+  background-color: #00bfa6;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.produk:hover {
+  text-decoration: none;
+}
+
+.form-control:focus {
+  border-color: #00bfa6;
+  box-shadow: none;
+  outline: none;
+}

@@ -21,6 +21,7 @@
           <CardProduct :product="product" />
         </router-link>
       </transition-group>
+      <Loading id="loader" style="display: none" />
       <div class="line"></div>
       <div class="row">
         <div class="col-md-6">
@@ -34,7 +35,6 @@
                 placeholder="Search.."
                 aria-label="Search"
                 aria-describedby="addon-wrapping"
-                @keyup="searchAllProduct"
               />
             </div>
           </div>
@@ -69,14 +69,14 @@
         <router-link
           :to="'/products/' + product.id"
           class="col-sm-6 col-md-3 mt-2 produk"
-          v-for="(product, index) in filterProductsByCategory"
+          v-for="(product, index) in filterProducts"
           :key="product.id"
           :data-index="index"
         >
           <AllProduct :product="product" />
         </router-link>
       </transition-group>
-      <NotFound v-show="allproducts.length == 0" />
+      <NotFound v-show="filterProducts.length == 0" />
     </div>
   </div>
 </template>
@@ -86,8 +86,10 @@ import Navbar from "@/components/Navbar.vue";
 import CardProduct from "@/components/CardProduct.vue";
 import AllProduct from "@/components/AllProduct.vue";
 import NotFound from "@/components/SearchNotFound.vue";
-import axios from "axios";
+import Loading from "@/components/Loading.vue"
+import { db } from "@/firebase/config"
 import gsap from "gsap";
+
 export default {
   name: "Product",
   components: {
@@ -95,6 +97,7 @@ export default {
     CardProduct,
     AllProduct,
     NotFound,
+    Loading
   },
   data() {
     return {
@@ -105,12 +108,6 @@ export default {
     };
   },
   methods: {
-    async searchAllProduct() {
-      const response = await axios.get(
-        "http://localhost:3000/products?q=" + this.search
-      );
-      this.allproducts = response.data;
-    },
     beforeEnter: function (el) {
       (el.style.opacity = 0), (el.style.transform = "translateY(25px)");
     },
@@ -125,13 +122,46 @@ export default {
       });
     },
     async bestSeller() {
-      const response = await axios.get("http://localhost:3000/best-seller");
-      this.bestproducts = response.data;
+      try {
+        const loader = document.querySelector('#loader')
+
+        loader.style.display = 'block'
+        const res = await db.collection('best-seller')
+          .get()
+
+        this.bestproducts = res.docs.map(doc => {
+          return {
+            ...doc.data(),
+            id: doc.id
+          }
+        })
+        loader.style.display = 'none'
+      }
+      catch (err) {
+        console.log(err);
+      }
     },
     async allProducts() {
-      const response = await axios.get("http://localhost:3000/products");
-      this.allproducts = response.data;
-    },
+      try {
+        const loader = document.querySelector('#loader')
+
+        loader.style.display = 'block'
+        const res = await db.collection('allProducts')
+          .orderBy('brand')
+          .get()
+
+        this.allproducts = res.docs.map(doc => {
+          return {
+            ...doc.data(),
+            id: doc.id
+          }
+        })
+        loader.style.display = 'none'
+      }
+      catch (err) {
+        console.log(err);
+      }
+    }
   },
   mounted() {
     // Best Seller
@@ -139,15 +169,23 @@ export default {
 
     // All Product
     this.allProducts();
-
-    this.searchAllProduct();
   },
   computed: {
-    filterProductsByCategory() {
+    filterProducts() {
+      let filterProduct = this.allproducts;
+
+      if (this.search) {
+        filterProduct = filterProduct.filter(product => {
+          return product.nama
+            .toLowerCase()
+            .includes(this.search.toLowerCase())
+        })
+      }
+
       if (this.brand === "All") {
-        return this.allproducts;
+        return filterProduct;
       } else {
-        return this.allproducts.filter(
+        return filterProduct.filter(
           (product) => !product.brand.indexOf(this.brand)
         );
       }

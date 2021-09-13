@@ -14,7 +14,8 @@
         </ol>
       </nav>
 
-      <div v-show="carts.length >= 1">
+      <Loading id="loader" style="display: none" />
+      <div id="cart" v-show="carts.length >= 1">
         <div class="row">
           <div class="col">
             <div class="table-responsive mt-3">
@@ -79,7 +80,7 @@
         </div>
       </div>
 
-      <EmptyCart v-show="carts.length === 0" />
+      <EmptyCart id="emptyCart" style="display: none" v-show="carts.length === 0" />
     </div>
   </div>
 </template>
@@ -87,13 +88,15 @@
 <script>
 import Navbar from "@/components/Navbar.vue";
 import EmptyCart from "@/components/EmptyCart.vue";
-import axios from "axios";
+import Loading from "@/components/Loading.vue"
+import { db } from "@/firebase/config"
 
 export default {
   name: "Cart",
   components: {
     Navbar,
     EmptyCart,
+    Loading
   },
   data() {
     return {
@@ -106,10 +109,7 @@ export default {
       let val = (value / 1).toFixed(0).replace(".");
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
-    setCarts(data) {
-      this.carts = data;
-    },
-    deleteOrder(id) {
+    async deleteOrder(id) {
       this.$swal
         .fire({
           title: "Are you sure?",
@@ -120,28 +120,56 @@ export default {
           cancelButtonColor: "#3085d6",
           confirmButtonText: "Yes, delete it!",
         })
-        .then((result) => {
+        .then(async (result) => {
           if (result.isConfirmed) {
-            axios
-              .delete("http://localhost:3000/carts/" + id)
-              .then(() => {
-                // Update Cart
-                axios
-                  .get("http://localhost:3000/carts")
-                  .then((response) => this.setCarts(response.data))
-                  .catch((error) => console.log(error));
-              })
-              .catch((error) => console.log(error));
+            try{
+              const loader = document.querySelector('#loader')
+              const cart = document.querySelector('#cart')
+
+              loader.style.display = 'block'
+              cart.style.display = 'none'
+              await db.collection('carts')
+                .doc(id)
+                .delete()
+                .then(() => {
+                  this.Carts()
+                })
+              loader.style.display = 'none'
+              cart.style.display = 'block'
+            }
+            catch (err) {
+              console.log(err);
+            }
             this.$swal.fire("Deleted!", "Your order was deleted", "success");
           }
         });
     },
+    async Carts() {
+      try {
+        const loader = document.querySelector('#loader')
+        const emptyCart = document.querySelector('#emptyCart')
+
+        loader.style.display = 'block'
+        emptyCart.style.display = 'none'
+        const res = await db.collection('carts')
+          .get()
+
+        this.carts = res.docs.map(doc => {
+          return {
+            ...doc.data(),
+            id: doc.id
+          }
+        })
+        loader.style.display = 'none'
+        emptyCart.style.display = 'block'
+      }
+      catch (err) {
+        console.log(err);
+      }
+    }
   },
   mounted() {
-    axios
-      .get("http://localhost:3000/carts")
-      .then((response) => this.setCarts(response.data))
-      .catch((error) => console.log(error));
+    this.Carts()
   },
   computed: {
     setTotal() {

@@ -11,8 +11,8 @@
         <router-link class="link" to="/product">Product</router-link>
         <a class="link" @click="toggleCartNav"
           >Cart <b-icon-bag></b-icon-bag
-          ><span class="badge badge-success ml-2">{{
-            updateCart ? updateCart.length : order_quantity.length
+          ><span class="badge badge-success ml-2" v-if="carts.length">{{
+            updateCart ? updateCart.length : carts.length
           }}</span></a
         >
 
@@ -25,7 +25,7 @@
             <div class="container">
               <div class="icon mb-3 mt-3">
                 <b-icon-bag></b-icon-bag>
-                {{ updateCart ? updateCart.length : order_quantity.length }}
+                {{ updateCart ? updateCart.length : carts.length }}
                 Items
               </div>
               <closeIcon @click="toggleCartNav" style="cursor: pointer" />
@@ -94,7 +94,7 @@
         <router-link class="link-mobile" to="/cart"
           >Cart <b-icon-bag></b-icon-bag
           ><span class="badge badge-success ml-2">{{
-            updateCart ? updateCart.length : order_quantity.length
+            updateCart ? updateCart.length : carts.length
           }}</span></router-link
         >
         <closeIconNav class="close-icon" @click="toggleMobileNav" />
@@ -105,11 +105,11 @@
 </template>
 
 <script>
-import axios from "axios";
 import CartNavEmpty from "@/components/CartNavEmpty.vue"
 import menuIcon from "../assets/icons/menu.svg";
 import closeIcon from "../assets/icons/close.svg";
 import closeIconNav from "../assets/icons/closeMobile.svg";
+import { db } from "@/firebase/config"
 
 export default {
   name: "Navbar",
@@ -135,17 +135,11 @@ export default {
     this.checkScreen();
   },
   methods: {
-    setTotalQty(data) {
-      this.order_quantity = data;
-    },
-    setCarts(data) {
-      this.carts = data;
-    },
     formatPrice(value) {
       let val = (value / 1).toFixed(0).replace(".");
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
-    deleteOrder(id) {
+    async deleteOrder(id) {
       this.$swal
         .fire({
           title: "Are you sure?",
@@ -156,18 +150,29 @@ export default {
           cancelButtonColor: "#3085d6",
           confirmButtonText: "Yes, delete it!",
         })
-        .then((result) => {
+        .then(async (result) => {
           if (result.isConfirmed) {
-            axios
-              .delete("http://localhost:3000/carts/" + id)
-              .then(() => {
-                // Update Cart
-                axios
-                  .get("http://localhost:3000/carts")
-                  .then((response) => this.setCarts(response.data))
-                  .catch((error) => console.log(error));
-              })
-              .catch((error) => console.log(error));
+            // axios
+            //   .delete("http://localhost:3000/carts/" + id)
+            //   .then(() => {
+            //     // Update Cart
+            //     axios
+            //       .get("http://localhost:3000/carts")
+            //       .then((response) => this.setCarts(response.data))
+            //       .catch((error) => console.log(error));
+            //   })
+            //   .catch((error) => console.log(error));
+            try {
+              await db.collection('carts')
+                .doc(id)
+                .delete()
+                .then(() => {
+                  this.Carts()
+                })
+            }
+            catch(err) {
+              console.log(err);
+            }
             this.$swal.fire("Deleted!", "Your order was deleted", "success");
           }
         });
@@ -189,19 +194,32 @@ export default {
     toggleCartNav() {
       this.cartNav = !this.cartNav;
     },
-    sticky() {
-      const nav = document.querySelector(".custom-nav");
-      nav.classList.toggle("sticky", window.scrollY > 100);
-    },
+    async Carts() {
+      try {
+        const res = await db.collection('carts')
+          .get()
+        
+        this.carts = res.docs.map(doc => {
+          return {
+            ...doc.data(),
+            id: doc.id
+          }
+        })
+      }
+      catch (err) {
+        console.log(err);
+      }
+    }
   },
   mounted() {
-    axios
-      .get("http://localhost:3000/carts")
-      .then((response) => {
-        this.setTotalQty(response.data);
-        this.setCarts(response.data);
-      })
-      .catch((error) => console.log(error));
+    // axios
+    //   .get("http://localhost:3000/carts")
+    //   .then((response) => {
+    //     this.setTotalQty(response.data);
+    //     this.setCarts(response.data);
+    //   })
+    //   .catch((error) => console.log(error));
+    this.Carts()
 
     window.addEventListener("scroll", this.sticky);
   },

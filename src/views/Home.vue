@@ -12,11 +12,12 @@
           <router-link
             :to="'/products/' + product.id"
             class="col-sm-6 col-md-3 mt-2 produk"
-            v-for="product in products"
+            v-for="product in newArrival"
             :key="product.id"
           >
             <NewArrival :product="product" />
           </router-link>
+          <Loading id="loader" style="display: none" />
         </div>
       </div>
 
@@ -28,7 +29,6 @@
           <div class="card-deck">
             <div class="row">
               <div class="col-lg mb-3">
-                <div></div>
                 <div class="card">
                   <h2 class="icon">
                     <font-awesome-icon icon="box-open"></font-awesome-icon>
@@ -82,12 +82,10 @@
 import Navbar from "@/components/Navbar.vue";
 import Hero from "@/components/Hero.vue";
 import NewArrival from "@/components/NewArrival.vue";
+import Loading from "@/components/Loading.vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
-// import $ from "jquery";
-
-gsap.registerPlugin(ScrollTrigger);
+import { db } from "@/firebase/config"
 
 export default {
   name: "Home",
@@ -95,12 +93,36 @@ export default {
     Navbar,
     Hero,
     NewArrival,
+    Loading,
     FontAwesomeIcon,
   },
   data() {
     return {
-      products: [],
+      newArrival: [],
     };
+  },
+  methods: {
+    async NewArrival() {
+      try{
+        const loader = document.querySelector('#loader')
+
+        loader.style.display = 'block'
+        const res = await db.collection('newArrival')
+                      .orderBy("brand")
+                      .get()
+
+        this.newArrival = res.docs.map((doc) => {
+          return {
+            ...doc.data(),
+            id: doc.id
+          }
+        })
+        loader.style.display = 'none'
+      }
+      catch (err) {
+        console.log(err);
+      }
+    }
   },
   mounted() {
     gsap.from(".delay", {
@@ -110,16 +132,7 @@ export default {
       delay: 0.5,
     });
 
-    fetch("http://localhost:3000/new-arrival")
-      .then((res) => res.json())
-      .then((data) => (this.products = data))
-      .catch((error) => console.log(error));
-
-    // $(".slider").slick({
-    //   infinite: true,
-    //   slidesToShow: 3,
-    //   slidesToScroll: 3,
-    // });
+    this.NewArrival()
   },
 };
 </script>

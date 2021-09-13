@@ -308,7 +308,7 @@
 import Navbar from "@/components/Navbar.vue";
 import closeIcon from "../assets/icons/close.svg";
 import EmptyCart from "@/components/EmptyCart.vue";
-import axios from "axios";
+import { db } from "@/firebase/config"
 
 export default {
   name: "Checkout",
@@ -358,7 +358,7 @@ export default {
       });
       return false;
     },
-    deleteOrder(id) {
+    async deleteOrder(id) {
       this.$swal
         .fire({
           title: "Are you sure?",
@@ -369,23 +369,19 @@ export default {
           cancelButtonColor: "#3085d6",
           confirmButtonText: "Yes, delete it!",
         })
-        .then((result) => {
+        .then(async (result) => {
           if (result.isConfirmed) {
-            axios
-              .delete("http://localhost:3000/carts/" + id)
+            await db.collection('carts')
+              .doc(id)
+              .delete()
               .then(() => {
-                // Update Cart
-                axios
-                  .get("http://localhost:3000/carts")
-                  .then((response) => this.setCarts(response.data))
-                  .catch((error) => console.log(error));
+                this.Carts()
               })
-              .catch((error) => console.log(error));
             this.$swal.fire("Deleted!", "Your order was deleted", "success");
           }
         });
     },
-    orders() {
+    async orders() {
       if (
         this.order.kurir &&
         this.order.nama &&
@@ -395,38 +391,56 @@ export default {
         this.order.kodepos
       ) {
         this.order.carts = this.carts;
-        axios.post("http://localhost:3000/orders", this.order).then(() => {
-          this.carts.map((item) => {
-            return axios
-              .delete("http://localhost:3000/carts/" + item.id)
-              .catch((error) => console.log(error));
-          });
-          const loading = this.$vs.loading({
-            background: "rgba(0, 0, 0, 0.5)",
-            color: "#00bfa6",
-            text: "Loading...",
-          });
-          setTimeout(() => {
-            this.$router.push({ path: "/order-success" });
-            this.$toast.success("Order Successfully Ordered", {
-              type: "success",
-              position: "top-right",
-              duration: 3000,
-              dismissible: true,
+        try {
+          await db.collection('orders')
+            .add(this.order)
+            .then(() => {
+              this.carts.map((item) => {
+                return db.collection('carts')
+                  .doc(item.id)
+                  .delete()
+              })
+            })
+            const loading = this.$vs.loading({
+              background: "rgba(0, 0, 0, 0.5)",
+              color: "#00bfa6",
+              text: "Loading...",
             });
-            loading.close();
-          }, 3000);
-        });
+            setTimeout(() => {
+              this.$router.push({ path: "/order-success" });
+              this.$toast.success("Order Successfully Ordered", {
+                type: "success",
+                position: "top-right",
+                duration: 3000,
+                dismissible: true,
+              });
+              loading.close();
+            }, 3000);
+        }
+        catch (err) {
+          console.log(err);
+        }
       }
     },
-    async inCarts() {
-      const response = await axios.get("http://localhost:3000/carts");
-      this.carts = response.data;
+    async Carts() {
+      try {
+        const res = await db.collection('carts')
+          .get()
+
+        this.carts = res.docs.map(doc => {
+          return {
+            ...doc.data(),
+            id: doc.id
+          }
+        })
+      }
+      catch (err) {
+        console.log(err);
+      }
     },
   },
-  async mounted() {
-    // Carts
-    this.inCarts();
+  mounted() {
+    this.Carts();
 
   },
   computed: {

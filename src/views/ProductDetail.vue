@@ -20,44 +20,47 @@
         </div>
       </div>
 
-      <div class="row mt-2">
-        <div class="col-md-6">
-          <img
-            :src="'../assets/images/' + product.gambar"
-            class="img-fluid shadow-sm produk-img mb-3"
-            :alt="product.gambar"
-          />
-        </div>
-        <div class="col-md-6">
-          <h3>{{ product.nama }}</h3>
-          <p>Rp {{ formatPrice(product.harga) }}</p>
-          <form class="mt-5" v-on:submit.prevent>
-            <div class="form-group">
-              <label for="order_quantity">Quantity</label>
-              <input
-                type="number"
-                class="form-control"
-                min="1"
-                value="1"
-                v-model="order.order_quantity"
-              />
-            </div>
-            <div class="form-group">
-              <label for="size">Size</label>
-              <select class="form-control" v-model="order.size">
-                <option
-                  v-for="product in productsize"
-                  :key="product.size"
-                  :product="product"
-                >
-                  {{ product.size }}
-                </option>
-              </select>
-            </div>
-            <button type="submit" class="button" @click="addToCart">
-              Add to Cart <b-icon-cart-plus></b-icon-cart-plus>
-            </button>
-          </form>
+      <Loading id="loader" style="display: none" />
+      <div class="detailProduct">
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <img
+              :src="'../assets/images/' + product.gambar"
+              class="img-fluid shadow-sm produk-img mb-3"
+              :alt="product.gambar"
+            />
+          </div>
+          <div class="col-md-6">
+            <h3>{{ product.nama }}</h3>
+            <p>Rp {{ formatPrice(product.harga) }}</p>
+            <form class="mt-5" v-on:submit.prevent>
+              <div class="form-group">
+                <label for="order_quantity">Quantity</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  min="1"
+                  value="1"
+                  v-model="order.order_quantity"
+                />
+              </div>
+              <div class="form-group">
+                <label for="size">Size</label>
+                <select class="form-control" v-model="order.size">
+                  <option
+                    v-for="product in productsize"
+                    :key="product.size"
+                    :product="product"
+                  >
+                    {{ product.size }}
+                  </option>
+                </select>
+              </div>
+              <button type="submit" class="button" @click="addToCart">
+                Add to Cart <b-icon-cart-plus></b-icon-cart-plus>
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -66,12 +69,14 @@
 
 <script>
 import Navbar from "@/components/Navbar.vue";
-import axios from "axios";
+import Loading from "@/components/Loading.vue"
+import { db } from "@/firebase/config"
 
 export default {
   name: "ProductDetail",
   components: {
     Navbar,
+    Loading
   },
   data() {
     return {
@@ -85,29 +90,25 @@ export default {
       let val = (value / 1).toFixed(0).replace(".");
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
-    setProduct(data) {
-      this.product = data;
-    },
-    setSizeShoes(data) {
-      this.productsize = data;
-    },
-    addToCart() {
+    async addToCart() {
       if (this.order.order_quantity && this.order.size) {
         this.order.products = this.product;
-        axios
-          .post("http://localhost:3000/carts", this.order)
-          .then(() => {
-            this.$router.push({ path: "/cart" });
-            this.$toast.success("Your order is added to the cart", {
-              type: "success",
-              position: "top-right",
-              duration: 3000,
-              dismissible: true,
-            });
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        try {
+          await db.collection('carts')
+            .add(this.order)
+            .then(() => {
+              this.$router.push({ name: "Cart" });
+              this.$toast.success("Your order is added to the cart", {
+                type: "success",
+                position: "top-right",
+                duration: 3000,
+                dismissible: true,
+              });
+            })
+        } 
+        catch (err) {
+          console.log(err);
+        }
       } else {
         this.$swal.fire({
           icon: "error",
@@ -116,17 +117,49 @@ export default {
         });
       }
     },
+    async getProduct(id) {
+      try {
+        const loader = document.querySelector('#loader')
+        const detailProduct = document.querySelector('.detailProduct')
+
+        loader.style.display = 'block'
+        detailProduct.style.display = 'none'
+        const res = await db.collection('allProducts')
+          .doc(id)
+          .get()
+
+        this.product = {
+          ...res.data(),
+          id: res.id
+        }
+        loader.style.display = 'none'
+        detailProduct.style.display = 'block'
+      }
+      catch (err) {
+        console.log(err);
+      }
+    },
+    async sizeShoes() {
+      try {
+        const res = await db.collection('size-shoes')
+          .get()
+
+        this.productsize = res.docs.map(doc => {
+          return {
+            ...doc.data(),
+            id: doc.id
+          }
+        })
+      }
+      catch (err) {
+        console.log(err);
+      }
+    }
   },
   mounted() {
-    axios
-      .get("http://localhost:3000/products/" + this.$route.params.id)
-      .then((response) => this.setProduct(response.data))
-      .catch((error) => console.log(error));
+      this.getProduct(this.$route.params.id)
 
-    axios
-      .get("http://localhost:3000/size-shoes")
-      .then((response) => this.setSizeShoes(response.data))
-      .catch((error) => console.log(error));
+      this.sizeShoes()
   },
 };
 </script>

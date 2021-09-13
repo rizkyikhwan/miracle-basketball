@@ -154,6 +154,7 @@ export default {
   border-radius: 20px;
   height: 100%;
   width: 110%;
+  filter: blur(2px);
   z-index: -1;
   transform: translateX(35%);
 }

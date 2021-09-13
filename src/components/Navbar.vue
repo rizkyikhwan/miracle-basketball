@@ -152,16 +152,6 @@ export default {
         })
         .then(async (result) => {
           if (result.isConfirmed) {
-            // axios
-            //   .delete("http://localhost:3000/carts/" + id)
-            //   .then(() => {
-            //     // Update Cart
-            //     axios
-            //       .get("http://localhost:3000/carts")
-            //       .then((response) => this.setCarts(response.data))
-            //       .catch((error) => console.log(error));
-            //   })
-            //   .catch((error) => console.log(error));
             try {
               await db.collection('carts')
                 .doc(id)
@@ -212,13 +202,6 @@ export default {
     }
   },
   mounted() {
-    // axios
-    //   .get("http://localhost:3000/carts")
-    //   .then((response) => {
-    //     this.setTotalQty(response.data);
-    //     this.setCarts(response.data);
-    //   })
-    //   .catch((error) => console.log(error));
     this.Carts()
 
     window.addEventListener("scroll", this.sticky);

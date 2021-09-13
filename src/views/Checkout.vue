@@ -139,37 +139,6 @@
                         />
                       </div>
                       <div class="form-group col-md-6">
-                        <label for="inputProvinsi">Provinsi</label>
-                        <select class="form-control" v-model="order.provinsi">
-                          <option
-                            v-for="provinsi in provinsis"
-                            :key="provinsi.id"
-                          >
-                            {{ provinsi.nama }}
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="form-row">
-                      <div class="form-group col-md-6">
-                        <label for="inputKabupaten">Kabupaten</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          v-model="order.kabupaten"
-                        />
-                      </div>
-                      <div class="form-group col-md-6">
-                        <label for="inputKecamatan">Kecamatan</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          v-model="order.kecamatan"
-                        />
-                      </div>
-                    </div>
-                    <div class="form-row">
-                      <div class="form-group col-md-6">
                         <label for="inputZip">Kode Pos</label>
                         <input
                           type="number"
@@ -178,14 +147,17 @@
                           min="1"
                         />
                       </div>
+                    </div>
+                    <div class="form-row">
                       <div class="form-group col-md-12">
                         <label for="inputAddress">Alamat</label>
                         <textarea
                           class="form-control"
                           v-model="order.alamat"
                           rows="3"
-                          placeholder="1234 Main St"
+                          placeholder="Provinsi, Kabupaten/Kota, ..."
                         />
+                        <small class="text-muted">*Lengkap dengan Provinsi, Kabupaten/Kota, Kecamatan</small>
                       </div>
                     </div>
                   </form>
@@ -349,7 +321,6 @@ export default {
     return {
       carts: [],
       order: {},
-      provinsis: {}
     };
   },
   methods: {
@@ -374,9 +345,6 @@ export default {
         this.order.nama &&
         this.order.email &&
         this.order.noHp &&
-        this.order.provinsi &&
-        this.order.kabupaten &&
-        this.order.kecamatan &&
         this.order.alamat &&
         this.order.kodepos
       ) {
@@ -423,9 +391,6 @@ export default {
         this.order.nama &&
         this.order.email &&
         this.order.noHp &&
-        this.order.provinsi &&
-        this.order.kabupaten &&
-        this.order.kecamatan &&
         this.order.alamat &&
         this.order.kodepos
       ) {
@@ -463,11 +428,6 @@ export default {
     // Carts
     this.inCarts();
 
-    // Provinsi
-    await axios
-      .get("https://dev.farizdotid.com/api/daerahindonesia/provinsi")
-      .then((response) => (this.provinsis = response.data.provinsi))
-      .catch((error) => console.log(error));
   },
   computed: {
     setTotal() {

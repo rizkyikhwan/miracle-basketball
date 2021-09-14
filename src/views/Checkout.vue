@@ -1,5 +1,6 @@
 <template>
   <div class="checkout">
+    <LoadingPage id="loadingPage" style="display: none" />
     <Navbar :updateCart="carts" />
     <div class="container">
       <nav aria-label="breadcrumb mt-2">
@@ -16,6 +17,7 @@
           <li class="breadcrumb-item active" aria-current="page">Checkout</li>
         </ol>
       </nav>
+      
       <form-wizard
         v-show="carts.length >= 1"
         color="#00bfa6"
@@ -299,7 +301,8 @@
           </div>
         </tab-content>
       </form-wizard>
-      <EmptyCart v-show="carts.length === 0" />
+      <Loading id="loader" style="display: none" />
+      <EmptyCart id="cartEmpty" style="display: none" v-show="carts.length === 0" />
     </div>
   </div>
 </template>
@@ -308,6 +311,8 @@
 import Navbar from "@/components/Navbar.vue";
 import closeIcon from "../assets/icons/close.svg";
 import EmptyCart from "@/components/EmptyCart.vue";
+import Loading from "@/components/Loading.vue"
+import LoadingPage from "@/components/LoadingPage.vue"
 import { db } from "@/firebase/config"
 
 export default {
@@ -316,6 +321,8 @@ export default {
     Navbar,
     closeIcon,
     EmptyCart,
+    Loading,
+    LoadingPage
   },
   data() {
     return {
@@ -371,12 +378,17 @@ export default {
         })
         .then(async (result) => {
           if (result.isConfirmed) {
+            const loadingPage = document.querySelector('#loadingPage')
+
+            loadingPage.style.display = 'block'
             await db.collection('carts')
               .doc(id)
               .delete()
               .then(() => {
                 this.Carts()
               })
+
+            loadingPage.style.display = 'none'
             this.$swal.fire("Deleted!", "Your order was deleted", "success");
           }
         });
@@ -403,12 +415,13 @@ export default {
             })
             const loading = this.$vs.loading({
               background: "rgba(0, 0, 0, 0.5)",
+              type: "waves",
               color: "#00bfa6",
-              text: "Loading...",
+              text: "Confirm Order...",
             });
             setTimeout(() => {
               this.$router.push({ path: "/order-success" });
-              this.$toast.success("Order Successfully Ordered", {
+              this.$toast.success("Successfully Ordered", {
                 type: "success",
                 position: "top-right",
                 duration: 3000,
@@ -424,6 +437,11 @@ export default {
     },
     async Carts() {
       try {
+        const loader = document.querySelector('#loader')
+        const cartEmpty = document.querySelector('#cartEmpty')
+
+        loader.style.display = 'block'
+        cartEmpty.style.display = 'none'
         const res = await db.collection('carts')
           .get()
 
@@ -433,6 +451,8 @@ export default {
             id: doc.id
           }
         })
+        loader.style.display = 'none'
+        cartEmpty.style.display = 'none'
       }
       catch (err) {
         console.log(err);

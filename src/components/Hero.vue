@@ -11,7 +11,7 @@
               <div class="line"></div>
               <h1><strong>Miracle</strong> <span class="typing"></span></h1>
               <h4>Your Attribute was Here!</h4>
-              <p>Jadilah Pemenang Disetiap Pertandingan</p>
+              <p>Get the champion with your best attribute</p>
               <div class="row justify-content-center">
                 <div class="col">
                   <router-link
@@ -47,7 +47,7 @@
               <div class="line"></div>
               <h2><strong>Miracle</strong> <span class="typing"></span></h2>
               <h5>Your Attribute was Here!</h5>
-              <p>Jadilah Pemenang Disetiap Pertandingan</p>
+              <p>Get the champion with your best attribute</p>
               <div class="row justify-content-center">
                 <div class="col">
                   <router-link

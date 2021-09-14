@@ -1,5 +1,6 @@
 <template>
   <div class="product-detail">
+    <LoadingPage id="loadingPage" style="display: none" />
     <Navbar />
     <div class="container">
       <div class="row">
@@ -70,13 +71,15 @@
 <script>
 import Navbar from "@/components/Navbar.vue";
 import Loading from "@/components/Loading.vue"
+import LoadingPage from "@/components/LoadingPage.vue"
 import { db } from "@/firebase/config"
 
 export default {
   name: "ProductDetail",
   components: {
     Navbar,
-    Loading
+    Loading,
+    LoadingPage
   },
   data() {
     return {
@@ -94,6 +97,15 @@ export default {
       if (this.order.order_quantity && this.order.size) {
         this.order.products = this.product;
         try {
+          const loadingPage = document.querySelector('#loadingPage')
+          
+          loadingPage.style.display = 'block'
+          // const loading = this.$vs.loading({
+          //     background: "rgba(0, 0, 0, 0.5)",
+          //     type: "waves",
+          //     color: "#00bfa6",
+          //     text: "Confirm Order...",
+          //   });
           await db.collection('carts')
             .add(this.order)
             .then(() => {
@@ -105,6 +117,8 @@ export default {
                 dismissible: true,
               });
             })
+            // loading.close()
+          loadingPage.style.display = 'none'
         } 
         catch (err) {
           console.log(err);

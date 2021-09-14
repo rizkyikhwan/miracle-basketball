@@ -5,13 +5,12 @@
         <div class="col">
           <transition appear @before-enter="beforeEnter" @enter="enter">
             <img
-              class="empty-img"
-              src="../assets/images/empty.png"
+              class="empty-img img-fluid"
+              src="../assets/images/empty-cart(edit).png"
               alt="empty"
             />
           </transition>
           <div class="text-center">
-            <h4>Your shopping cart is empty.</h4>
             <p>Add items you want to shop</p>
             <router-link to="/product">
               <button class="button">Go to Shop</button>

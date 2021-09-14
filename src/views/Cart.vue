@@ -80,7 +80,7 @@
         </div>
       </div>
 
-      <EmptyCart id="emptyCart" style="display: none" v-show="carts.length === 0" />
+      <EmptyCart id="cartEmpty" style="display: none" v-show="carts.length === 0" />
     </div>
   </div>
 </template>
@@ -124,10 +124,13 @@ export default {
           if (result.isConfirmed) {
             try{
               const loader = document.querySelector('#loader')
+              const cartEmpty = document.querySelector('#cartEmpty')
               const cart = document.querySelector('#cart')
 
               loader.style.display = 'block'
               cart.style.display = 'none'
+              cartEmpty.style.display = 'none'
+              
               await db.collection('carts')
                 .doc(id)
                 .delete()
@@ -136,6 +139,7 @@ export default {
                 })
               loader.style.display = 'none'
               cart.style.display = 'block'
+              cartEmpty.style.display = 'none'
             }
             catch (err) {
               console.log(err);
@@ -147,10 +151,10 @@ export default {
     async Carts() {
       try {
         const loader = document.querySelector('#loader')
-        const emptyCart = document.querySelector('#emptyCart')
+        const cartEmpty = document.querySelector('#cartEmpty')
 
         loader.style.display = 'block'
-        emptyCart.style.display = 'none'
+        cartEmpty.style.display = 'none'
         const res = await db.collection('carts')
           .get()
 
@@ -161,7 +165,7 @@ export default {
           }
         })
         loader.style.display = 'none'
-        emptyCart.style.display = 'block'
+        cartEmpty.style.display = 'none'
       }
       catch (err) {
         console.log(err);

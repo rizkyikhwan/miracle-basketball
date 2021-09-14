@@ -65,6 +65,7 @@
         @enter="enter"
         class="row mb-5"
         v-show="allproducts.length >= 1"
+        v-if="allproducts.length"
       >
         <router-link
           :to="'/products/' + product.id"
@@ -76,7 +77,8 @@
           <AllProduct :product="product" />
         </router-link>
       </transition-group>
-      <NotFound v-show="filterProducts.length == 0" />
+      <Loading v-else />
+      <NotFound id="searchNotFound" v-show="filterProducts.length == 0" />
     </div>
   </div>
 </template>
@@ -104,7 +106,7 @@ export default {
       bestproducts: [],
       allproducts: [],
       search: "",
-      brand: "All",
+      brand: "All"
     };
   },
   methods: {
@@ -143,9 +145,9 @@ export default {
     },
     async allProducts() {
       try {
-        const loader = document.querySelector('#loader')
+        const searchNotFound = document.querySelector('#searchNotFound')
 
-        loader.style.display = 'block'
+        searchNotFound.style.display = 'none'
         const res = await db.collection('allProducts')
           .orderBy('brand')
           .get()
@@ -156,7 +158,7 @@ export default {
             id: doc.id
           }
         })
-        loader.style.display = 'none'
+        searchNotFound.style.display = 'block'
       }
       catch (err) {
         console.log(err);

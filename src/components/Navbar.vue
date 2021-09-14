@@ -6,6 +6,7 @@
           ><img src="../assets/images/logo.png" alt="logo" class="img-brand"
         /></router-link>
       </div>
+      <!-- Desktop -->
       <div class="nav-links" v-show="!mobile">
         <router-link class="link" to="/">Home</router-link>
         <router-link class="link" to="/product">Product</router-link>
@@ -83,6 +84,8 @@
         </transition>
       </div>
     </nav>
+
+    <!-- Mobile -->
     <menuIcon class="menu-icon" @click="toggleMobileNav" v-show="mobile" />
     <transition name="overlay">
       <div class="overlay" v-show="mobileNav"></div>
@@ -91,12 +94,73 @@
       <ul class="mobile-nav" v-show="mobileNav">
         <router-link class="link-mobile" to="/">Home</router-link>
         <router-link class="link-mobile" to="/product">Product</router-link>
-        <router-link class="link-mobile" to="/cart"
+        <a class="link-mobile" style="cursor: pointer" @click="toggleCartNavMobile"
           >Cart <b-icon-bag></b-icon-bag
-          ><span class="badge badge-success ml-2">{{
+          ><span class="badge badge-success ml-2" v-if="carts.length">{{
             updateCart ? updateCart.length : carts.length
-          }}</span></router-link
+          }}</span></a
         >
+        <transition name="cart-navMobile">
+          <div class="cart-navMobile" v-show="cartNavMobile">
+            <div class="container">
+              <div class="icon mb-3 mt-3">
+                <b-icon-bag></b-icon-bag>
+                {{ updateCart ? updateCart.length : carts.length }}
+                Items
+              </div>
+              <closeIcon @click="toggleCartNavMobile" style="cursor: pointer" />
+              <!-- Jika ada barang -->
+              <table class="table" v-show="carts.length >= 1">
+                <tbody>
+                  <tr v-for="cart in carts" :key="cart.id">
+                    <td>
+                      {{ cart.order_quantity }}x
+                      <br />
+                      <b-icon-trash
+                        class="text-danger"
+                        style="cursor: pointer"
+                        @click="deleteOrder(cart.id)"
+                      ></b-icon-trash>
+                    </td>
+                    <td>
+                      <img
+                        :src="'../assets/images/' + cart.products.gambar"
+                        class="img-fluid"
+                        width="100px"
+                        :alt="cart.products.gambar"
+                      />
+                    </td>
+                    <td>
+                      <div class="row">
+                        <div class="col">
+                          <p style="font-size: 12px">
+                            {{ cart.products.nama }}
+                          </p>
+                          <p style="font-size: 12px">
+                            Rp {{ formatPrice(cart.products.harga) }}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <CartNavMobileEmpty v-show="carts.length == 0"/>
+            <div class="row" v-show="carts.length >= 1">
+              <div class="col-12">
+                <router-link type="button" to="/checkout" class="button-checkout shadow"
+                  >Checkout Now<br>(Rp {{ formatPrice(setTotal) }})</router-link
+                >
+              </div>
+              <div class="col-12">
+                <router-link type="button" to="/cart" class="button"
+                  >View Cart</router-link
+                >
+              </div>
+            </div>
+          </div>
+        </transition>
         <closeIconNav class="close-icon" @click="toggleMobileNav" />
         <img src="../assets/images/logo-white.png" alt="logo" class="img-logo" />
       </ul>
@@ -106,6 +170,7 @@
 
 <script>
 import CartNavEmpty from "@/components/CartNavEmpty.vue"
+import CartNavMobileEmpty from "@/components/CartNavMobileEmpty.vue"
 import menuIcon from "../assets/icons/menu.svg";
 import closeIcon from "../assets/icons/close.svg";
 import closeIconNav from "../assets/icons/closeMobile.svg";
@@ -116,6 +181,7 @@ export default {
   props: ["updateCart"],
   components: {
     CartNavEmpty,
+    CartNavMobileEmpty,
     menuIcon,
     closeIcon,
     closeIconNav,
@@ -127,6 +193,7 @@ export default {
       mobile: null,
       mobileNav: null,
       cartNav: null,
+      cartNavMobile: null,
       windowWidth: null,
     };
   },
@@ -169,12 +236,11 @@ export default {
     },
     checkScreen() {
       this.windowWidth = window.innerWidth;
-      if (this.windowWidth <= 750) {
+      if (this.windowWidth <= 766) {
         this.mobile = true;
         return;
       } else {
         this.mobile = false;
-        this.mobileNav = false;
         return;
       }
     },
@@ -183,6 +249,9 @@ export default {
     },
     toggleCartNav() {
       this.cartNav = !this.cartNav;
+    },
+    toggleCartNavMobile() {
+      this.cartNavMobile = !this.cartNavMobile
     },
     async Carts() {
       try {
@@ -315,6 +384,8 @@ export default {
 .mobile-nav-leave-active,
 .cart-nav-enter-active,
 .cart-nav-leave-active,
+.cart-navMobile-enter-active,
+.cart-navMobile-leave-active,
 .overlay-enter-active,
 .overlay-leave-active {
   transition: all 0.5s ease;
@@ -334,6 +405,14 @@ export default {
 
 .cart-nav-leave-to {
   transform: translateX(400px);
+}
+
+.cart-navMobile-enter {
+  transform: translateX(-400px);
+}
+
+.cart-navMobile-leave-to {
+  transform: translateX(-400px);
 }
 
 .overlay-enter {
@@ -372,6 +451,21 @@ export default {
   background-color: #fff;
   top: 0;
   right: 0;
+  z-index: 2;
+}
+
+.cart-navMobile {
+  padding: 15px;
+  width: 70%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100%;
+  color: #303030;
+  background-color: #fff;
+  top: 0;
+  left: 0;
   z-index: 2;
 }
 

@@ -272,8 +272,6 @@ export default {
   },
   mounted() {
     this.Carts()
-
-    window.addEventListener("scroll", this.sticky);
   },
   computed: {
     setTotal() {

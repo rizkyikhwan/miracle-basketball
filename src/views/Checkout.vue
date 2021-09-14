@@ -204,7 +204,7 @@
                   <hr />
                   <p>Method of payment</p>
                   <div class="row">
-                    <div class="col-md-3 mb-3">
+                    <div class="col-6 col-md-3 mb-3">
                       <img
                         src="../assets/icons/Mandiri.png"
                         alt=""
@@ -213,7 +213,7 @@
                       <br />
                       <small>Mandiri Virtual Account</small>
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="col-6 col-md-3 mb-3">
                       <img
                         src="../assets/icons/BCA.png"
                         alt=""
@@ -222,7 +222,7 @@
                       <br />
                       <small>BCA Virtual Account</small>
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="col-6 col-md-3 mb-3">
                       <img
                         src="../assets/icons/briva.png"
                         alt=""
@@ -231,7 +231,7 @@
                       <br />
                       <small>BRIVA</small>
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="col-6 col-md-3 mb-3">
                       <img
                         src="../assets/icons/bni.png"
                         alt=""
@@ -240,7 +240,7 @@
                       <br />
                       <small>BNI Virtual Account</small>
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="col-6 col-md-3 mb-3">
                       <img
                         src="../assets/icons/btn.png"
                         alt=""
@@ -249,7 +249,7 @@
                       <br />
                       <small>BTN Virtual Account</small>
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="col-6 col-md-3 mb-3">
                       <img
                         src="../assets/icons/danamon.png"
                         alt=""

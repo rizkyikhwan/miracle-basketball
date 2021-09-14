@@ -13,7 +13,7 @@
       >
         <router-link
           :to="'/products/' + product.id"
-          class="col-sm-6 col-md-4 mt-2 produk"
+          class="col-6 col-md-4 mt-2 produk"
           v-for="(product, index) in bestproducts"
           :key="product.id"
           :data-index="index"
@@ -69,12 +69,12 @@
       >
         <router-link
           :to="'/products/' + product.id"
-          class="col-sm-6 col-md-3 mt-2 produk"
+          class="col-6 col-md-3 mt-2 produk"
           v-for="(product, index) in filterProducts"
           :key="product.id"
           :data-index="index"
         >
-          <AllProduct :product="product" />
+          <CardProduct :product="product" />
         </router-link>
       </transition-group>
       <Loading v-else />
@@ -86,7 +86,6 @@
 <script>
 import Navbar from "@/components/Navbar.vue";
 import CardProduct from "@/components/CardProduct.vue";
-import AllProduct from "@/components/AllProduct.vue";
 import NotFound from "@/components/SearchNotFound.vue";
 import Loading from "@/components/Loading.vue"
 import { db } from "@/firebase/config"
@@ -97,7 +96,6 @@ export default {
   components: {
     Navbar,
     CardProduct,
-    AllProduct,
     NotFound,
     Loading
   },

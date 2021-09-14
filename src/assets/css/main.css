@@ -2,6 +2,7 @@
   /* font-family: "Montserrat", sans-serif; */
   font-family: "Saira Semi Condensed", sans-serif;
   overflow: hidden;
+  min-height: 100vh;
 }
 
 .line {

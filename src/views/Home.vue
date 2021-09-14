@@ -11,11 +11,11 @@
         <div class="row mb-5">
           <router-link
             :to="'/products/' + product.id"
-            class="col-sm-6 col-md-3 mt-2 produk"
+            class="col-6 col-md-3 mt-2 produk"
             v-for="product in newArrival"
             :key="product.id"
           >
-            <NewArrival :product="product" />
+            <CardProduct :product="product" />
           </router-link>
           <Loading id="loader" style="display: none" />
         </div>
@@ -81,7 +81,7 @@
 <script>
 import Navbar from "@/components/Navbar.vue";
 import Hero from "@/components/Hero.vue";
-import NewArrival from "@/components/NewArrival.vue";
+import CardProduct from "@/components/CardProduct.vue";
 import Loading from "@/components/Loading.vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import gsap from "gsap";
@@ -92,7 +92,7 @@ export default {
   components: {
     Navbar,
     Hero,
-    NewArrival,
+    CardProduct,
     Loading,
     FontAwesomeIcon,
   },
@@ -255,5 +255,11 @@ export default {
     url("../assets/images/footer-bg.jpg");
   background-position: center;
   background-size: cover;
+}
+
+@media screen and (max-width: 576px) {
+  .arrival::after {
+  font-size: 44px;
+}
 }
 </style>

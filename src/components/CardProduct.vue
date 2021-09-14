@@ -49,8 +49,19 @@ export default {
 }
 
 @media (max-width: 768px) {
-    .card {
-        box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.1);
+  .card {
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.1);
     }
+}
+
+@media (max-width: 576px) {
+  .card-title {
+    font-size: 16px;
+  }
+
+  .card-text {
+    font-size: 14px;
+  }
+
 }
 </style>

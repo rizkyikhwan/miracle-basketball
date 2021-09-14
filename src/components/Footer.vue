@@ -4,7 +4,7 @@
       <div class="container-fluid">
         <div class="row">
           <!-- sosial media -->
-          <div class="col-sm-6 col-md-3">
+          <div class="col-6 col-md-3">
             <div id="getHelp" class="tittle-footer">
               <h5><strong>Ikuti Kami</strong></h5>
               <div>
@@ -45,7 +45,7 @@
           </div>
 
           <!-- Partner Brand -->
-          <div class="col-sm-6 col-md-3">
+          <div class="col-6 col-md-3">
             <div id="getHelp" class="tittle-footer">
               <h5><strong>Partner Brand</strong></h5>
               <div style="margin-left: -10px">
@@ -86,7 +86,7 @@
           </div>
 
           <!-- Bantuan -->
-          <div class="col-sm-6 col-md-3">
+          <div class="col-6 col-md-3">
             <div id="getHelp" class="tittle-footer">
               <h5><strong>Bantuan</strong></h5>
               <li class="list">
@@ -104,7 +104,7 @@
           </div>
 
           <!-- CS -->
-          <div class="col-sm-6 col-md-3">
+          <div class="col-6 col-md-3">
             <div id="getHelp">
               <h5 style="color: #d4d4d4">
                 <strong>Customer Service</strong>

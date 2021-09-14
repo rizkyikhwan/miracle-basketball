@@ -5,7 +5,7 @@
       <div class="row mb-5">
         <div class="col">
           <img
-            src="../assets/images/notfound.png"
+            src="../assets/images/page-not-found.png"
             alt="not found"
             class="img-notfound img-fluid"
           />

@@ -17,7 +17,7 @@
           <li class="breadcrumb-item active" aria-current="page">Checkout</li>
         </ol>
       </nav>
-      
+
       <form-wizard
         v-show="carts.length >= 1"
         color="#00bfa6"
@@ -42,6 +42,7 @@
                     <img
                       :src="'../assets/images/' + cart.products.gambar"
                       style="max-width: 200px"
+                      class="img-product"
                     />
                   </div>
                   <div class="card-body">
@@ -100,6 +101,13 @@
                       <option>SiCepat - Reguler</option>
                     </select>
                   </div>
+                  <transition name="alert">
+                    <Alert
+                      v-if="errorCourier"
+                      :errorMsg="errorMsgSelectCourier"
+                      @closeAlert="closeAlert"
+                    />
+                  </transition>
                 </div>
               </div>
             </div>
@@ -159,9 +167,19 @@
                           rows="3"
                           placeholder="Provinsi, Kabupaten/Kota, ..."
                         />
-                        <small class="text-muted">*Lengkap dengan Provinsi, Kabupaten/Kota, Kecamatan</small>
+                        <small class="text-muted"
+                          >*Lengkap dengan Provinsi, Kabupaten/Kota,
+                          Kecamatan</small
+                        >
                       </div>
                     </div>
+                    <transition name="alert">
+                      <Alert
+                        v-if="errorInputForm"
+                        :errorMsg="errorMsgInputForm"
+                        @closeAlert="closeAlert"
+                      />
+                    </transition>
                   </form>
                 </div>
               </div>
@@ -302,7 +320,11 @@
         </tab-content>
       </form-wizard>
       <Loading id="loader" style="display: none" />
-      <EmptyCart id="cartEmpty" style="display: none" v-show="carts.length === 0" />
+      <EmptyCart
+        id="cartEmpty"
+        style="display: none"
+        v-show="carts.length === 0"
+      />
     </div>
   </div>
 </template>
@@ -311,9 +333,10 @@
 import Navbar from "@/components/Navbar.vue";
 import closeIcon from "../assets/icons/close.svg";
 import EmptyCart from "@/components/EmptyCart.vue";
-import Loading from "@/components/Loading.vue"
-import LoadingPage from "@/components/LoadingPage.vue"
-import { db } from "@/firebase/config"
+import Loading from "@/components/Loading.vue";
+import LoadingPage from "@/components/LoadingPage.vue";
+import Alert from "@/components/Alert.vue";
+import { db } from "@/firebase/config";
 
 export default {
   name: "Checkout",
@@ -322,12 +345,17 @@ export default {
     closeIcon,
     EmptyCart,
     Loading,
-    LoadingPage
+    LoadingPage,
+    Alert,
   },
   data() {
     return {
       carts: [],
       order: {},
+      errorCourier: null,
+      errorInputForm: null,
+      errorMsgSelectCourier: "",
+      errorMsgInputForm: "",
     };
   },
   methods: {
@@ -340,11 +368,8 @@ export default {
         this.order.carts = this.carts;
         return true;
       }
-      this.$swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Pilih Ekspedisi Pengiriman",
-      });
+      this.errorCourier = true;
+      this.errorMsgSelectCourier = "Pilih ekspedisi pengiriman";
       return false;
     },
     inputForm() {
@@ -358,12 +383,13 @@ export default {
         this.order.carts = this.carts;
         return true;
       }
-      this.$swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Lengkapi Alamat Pengiriman",
-      });
+      this.errorInputForm = true;
+      this.errorMsgInputForm = "Lengkapi Alamat Pengiriman";
       return false;
+    },
+    closeAlert() {
+      this.errorCourier = false
+      this.errorInputForm = false
     },
     async deleteOrder(id) {
       this.$swal
@@ -378,18 +404,24 @@ export default {
         })
         .then(async (result) => {
           if (result.isConfirmed) {
-            const loadingPage = document.querySelector('#loadingPage')
+            const loadingPage = document.querySelector("#loadingPage");
 
-            loadingPage.style.display = 'block'
-            await db.collection('carts')
+            loadingPage.style.display = "block";
+            await db
+              .collection("carts")
               .doc(id)
               .delete()
               .then(() => {
-                this.Carts()
-              })
+                this.Carts();
+              });
 
-            loadingPage.style.display = 'none'
-            this.$swal.fire("Deleted!", "Your order was deleted", "success");
+            loadingPage.style.display = "none";
+            this.$toast.error("Your order was deleted", {
+              type: "error",
+              position: "top-right",
+              duration: 3000,
+              dismissible: true,
+            })
           }
         });
     },
@@ -404,64 +436,59 @@ export default {
       ) {
         this.order.carts = this.carts;
         try {
-          await db.collection('orders')
+          await db
+            .collection("orders")
             .add(this.order)
             .then(() => {
               this.carts.map((item) => {
-                return db.collection('carts')
-                  .doc(item.id)
-                  .delete()
-              })
-            })
-            const loading = this.$vs.loading({
-              background: "rgba(0, 0, 0, 0.5)",
-              type: "waves",
-              color: "#00bfa6",
-              text: "Confirm Order...",
-            });
-            setTimeout(() => {
-              this.$router.push({ path: "/order-success" });
-              this.$toast.success("Successfully Ordered", {
-                type: "success",
-                position: "top-right",
-                duration: 3000,
-                dismissible: true,
+                return db.collection("carts").doc(item.id).delete();
               });
-              loading.close();
-            }, 3000);
-        }
-        catch (err) {
+            });
+          const loading = this.$vs.loading({
+            background: "rgba(0, 0, 0, 0.5)",
+            type: "waves",
+            color: "#00bfa6",
+            text: "Confirm Order...",
+          });
+          setTimeout(() => {
+            this.$router.push({ path: "/order-success" });
+            this.$toast.success("Successfully Ordered", {
+              type: "success",
+              position: "top-right",
+              duration: 3000,
+              dismissible: true,
+            });
+            loading.close();
+          }, 3000);
+        } catch (err) {
           console.log(err);
         }
       }
     },
     async Carts() {
       try {
-        const loader = document.querySelector('#loader')
-        const cartEmpty = document.querySelector('#cartEmpty')
+        const loader = document.querySelector("#loader");
+        const cartEmpty = document.querySelector("#cartEmpty");
 
-        loader.style.display = 'block'
-        cartEmpty.style.display = 'none'
-        const res = await db.collection('carts')
-          .get()
+        loader.style.display = "block";
+        cartEmpty.style.display = "none";
+        const res = await db.collection("carts").get();
 
-        this.carts = res.docs.map(doc => {
+        this.carts = res.docs.map((doc) => {
           return {
             ...doc.data(),
-            id: doc.id
-          }
-        })
-        loader.style.display = 'none'
-        cartEmpty.style.display = 'none'
-      }
-      catch (err) {
+            id: doc.id,
+          };
+        });
+        loader.style.display = "none";
+        cartEmpty.style.display = "none";
+      } catch (err) {
         console.log(err);
       }
     },
   },
   mounted() {
     this.Carts();
-
   },
   computed: {
     setTotal() {
@@ -519,5 +546,11 @@ export default {
 .item {
   text-decoration: none;
   color: #00bfa6;
+}
+
+@media (max-width: 528px) {
+  .img-product {
+    border-radius: 0 0 5px 0;
+  }
 }
 </style>

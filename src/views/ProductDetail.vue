@@ -57,6 +57,9 @@
                   </option>
                 </select>
               </div>
+              <transition name="alert">
+                <Alert v-if="error" :errorMsg="errorMsg" @closeAlert="closeAlert()" />
+              </transition>
               <button type="submit" class="button" @click="addToCart">
                 Add to Cart <b-icon-cart-plus></b-icon-cart-plus>
               </button>
@@ -70,22 +73,26 @@
 
 <script>
 import Navbar from "@/components/Navbar.vue";
-import Loading from "@/components/Loading.vue"
-import LoadingPage from "@/components/LoadingPage.vue"
-import { db } from "@/firebase/config"
+import Loading from "@/components/Loading.vue";
+import LoadingPage from "@/components/LoadingPage.vue";
+import Alert from "@/components/Alert.vue";
+import { db } from "@/firebase/config";
 
 export default {
   name: "ProductDetail",
   components: {
     Navbar,
     Loading,
-    LoadingPage
+    LoadingPage,
+    Alert,
   },
   data() {
     return {
       product: {},
       productsize: [],
       order: {},
+      error: null,
+      errorMsg: "",
     };
   },
   methods: {
@@ -93,20 +100,18 @@ export default {
       let val = (value / 1).toFixed(0).replace(".");
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
+    closeAlert() {
+      this.error = false
+    },
     async addToCart() {
       if (this.order.order_quantity && this.order.size) {
         this.order.products = this.product;
         try {
-          const loadingPage = document.querySelector('#loadingPage')
-          
-          loadingPage.style.display = 'block'
-          // const loading = this.$vs.loading({
-          //     background: "rgba(0, 0, 0, 0.5)",
-          //     type: "waves",
-          //     color: "#00bfa6",
-          //     text: "Confirm Order...",
-          //   });
-          await db.collection('carts')
+          const loadingPage = document.querySelector("#loadingPage");
+
+          loadingPage.style.display = "block";
+          await db
+            .collection("carts")
             .add(this.order)
             .then(() => {
               this.$router.push({ name: "Cart" });
@@ -116,64 +121,54 @@ export default {
                 duration: 3000,
                 dismissible: true,
               });
-            })
-            // loading.close()
-          loadingPage.style.display = 'none'
-        } 
-        catch (err) {
+            });
+          loadingPage.style.display = "none";
+        } catch (err) {
           console.log(err);
         }
       } else {
-        this.$swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Please complete the order form!",
-        });
+        this.error = true;
+        this.errorMsg = "Please fill out all the fields!";
       }
     },
     async getProduct(id) {
       try {
-        const loader = document.querySelector('#loader')
-        const detailProduct = document.querySelector('.detailProduct')
+        const loader = document.querySelector("#loader");
+        const detailProduct = document.querySelector(".detailProduct");
 
-        loader.style.display = 'block'
-        detailProduct.style.display = 'none'
-        const res = await db.collection('allProducts')
-          .doc(id)
-          .get()
+        loader.style.display = "block";
+        detailProduct.style.display = "none";
+        const res = await db.collection("allProducts").doc(id).get();
 
         this.product = {
           ...res.data(),
-          id: res.id
-        }
-        loader.style.display = 'none'
-        detailProduct.style.display = 'block'
-      }
-      catch (err) {
+          id: res.id,
+        };
+        loader.style.display = "none";
+        detailProduct.style.display = "block";
+      } catch (err) {
         console.log(err);
       }
     },
     async sizeShoes() {
       try {
-        const res = await db.collection('size-shoes')
-          .get()
+        const res = await db.collection("size-shoes").get();
 
-        this.productsize = res.docs.map(doc => {
+        this.productsize = res.docs.map((doc) => {
           return {
             ...doc.data(),
-            id: doc.id
-          }
-        })
-      }
-      catch (err) {
+            id: doc.id,
+          };
+        });
+      } catch (err) {
         console.log(err);
       }
-    }
+    },
   },
   mounted() {
-      this.getProduct(this.$route.params.id)
+    this.getProduct(this.$route.params.id);
 
-      this.sizeShoes()
+    this.sizeShoes();
   },
 };
 </script>
@@ -205,7 +200,7 @@ export default {
   letter-spacing: 1px;
   font-weight: 500;
   box-shadow: inset 0 0 0 0 #00bfa6;
-  transition: .75s ease-out;
+  transition: 0.75s ease-out;
 }
 
 .button:hover {

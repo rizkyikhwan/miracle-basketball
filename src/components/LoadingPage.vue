@@ -31,7 +31,8 @@ export default {
   border: 5px solid transparent;
   border-radius: 50%;
   border-top-color: #00bfa6;
-  animation: spin 1s ease infinite;
+  border-bottom-color: #00bfa6;
+  animation: spin .75s linear infinite;
 }
 
 @media (max-width: 766px) {

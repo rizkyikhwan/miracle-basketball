@@ -258,8 +258,8 @@ export default {
 }
 
 @media screen and (max-width: 576px) {
-  .arrival::after {
-  font-size: 44px;
-}
+    .arrival::after {
+    font-size: 44px;
+  }
 }
 </style>

@@ -47,7 +47,7 @@
                       <p>Brand: {{ cart.products.brand }}</p>
                       <p>Size : {{ cart.size }}</p>
                     </td>
-                    <td class="text-center">{{ cart.order_quantity }}</td>
+                    <td class="text-center"> {{ cart.order_quantity }} </td>
                     <td class="text-danger">
                       <b-icon-trash
                         class="delete-btn"
@@ -144,7 +144,12 @@ export default {
             catch (err) {
               console.log(err);
             }
-            this.$swal.fire("Deleted!", "Your order was deleted", "success");
+            this.$toast.error("Your order was deleted", {
+              type: "error",
+              position: "top-right",
+              duration: 3000,
+              dismissible: true,
+            })
           }
         });
     },

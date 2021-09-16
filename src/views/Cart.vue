@@ -20,7 +20,7 @@
           <div class="col">
             <div class="table-responsive mt-3">
               <table class="table">
-                <thead class="thead-dark">
+                <thead>
                   <tr>
                     <th scope="col">No.</th>
                     <th scope="col">Product</th>

@@ -11,7 +11,7 @@
           />
           <div class="col d-flex justify-content-center mt-3 mb-3">
             <router-link :to="{ name: 'Home' }">
-              <button class="button">GO HOME</button>
+              <button class="button">GO BACK HOME</button>
             </router-link>
           </div>
         </div>

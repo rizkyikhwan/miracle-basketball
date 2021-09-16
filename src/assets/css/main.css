@@ -53,3 +53,51 @@
     transform: translateX(0px);
   }
 }
+
+@media (max-width: 576px) {
+  .home,
+  .product,
+  .product-detail,
+  .cart,
+  .checkout,
+  .pageNotFound,
+  .order-success {
+    margin-top: 25%;
+  }
+}
+
+@media (min-width: 768px) {
+  .home,
+  .product,
+  .product-detail,
+  .cart,
+  .checkout,
+  .pageNotFound,
+  .order-success {
+    margin-top: 12%;
+  }
+}
+
+@media (min-width: 992px) {
+  .home,
+  .product,
+  .product-detail,
+  .cart,
+  .checkout,
+  .pageNotFound,
+  .order-success {
+    margin-top: 10%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .home,
+  .product,
+  .product-detail,
+  .cart,
+  .checkout,
+  .pageNotFound,
+  .order-success {
+    margin-top: 7%;
+  }
+}

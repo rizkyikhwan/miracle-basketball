@@ -42,7 +42,7 @@
         <div class="col-md-6 d-flex align-items-end">
           <div class="col filterBrand">
             <div class="row">
-              <vs-select v-model="brand" >
+              <vs-select v-model="brand" style="z-index: 0" >
                 <vs-option label="All" value="All"> All </vs-option>
                 <vs-option label="Nike" value="Nike"> Nike </vs-option>
                 <vs-option label="Adidas" value="Adidas"> Adidas </vs-option>
@@ -195,6 +195,7 @@ export default {
 </script>
 
 <style scoped>
+
 h2 {
   font-family: "Rajdhani", sans-serif;
 }
@@ -251,7 +252,7 @@ h2 {
 
 @media (max-width: 768px) {
   .filterBrand {
-      display: flex;
+    display: flex;
       justify-content: start;
       margin-bottom: 10px;
     }

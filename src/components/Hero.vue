@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="hero">
     <div class="container">
     <!-- Desktop -->
     <div class="d-none d-md-block">

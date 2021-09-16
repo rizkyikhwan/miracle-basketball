@@ -2,7 +2,7 @@
   <div class="product-detail">
     <LoadingPage id="loadingPage" style="display: none" />
     <Navbar />
-    <div class="container">
+    <div class="container mb-5">
       <div class="row">
         <div class="col">
           <nav aria-label="breadcrumb">
@@ -26,10 +26,22 @@
         <div class="row mt-2">
           <div class="col-md-6">
             <img
+              id="featured"
               :src="'../assets/images/' + product.gambar"
               class="img-fluid shadow-sm produk-img mb-3"
               :alt="product.gambar"
             />
+            <div id="slide-wrapper" class="mb-5">
+              <font-awesome-icon icon="chevron-left" id="slideLeft" class="arrow"></font-awesome-icon>
+              <div id="slider">
+                <img :src="'../assets/images/' + product.gambar" class="img-fluid shadow-sm produk-img thumbnail">
+                <img :src="'../assets/images/' + product.gambar1" class="img-fluid shadow-sm produk-img thumbnail">
+                <img :src="'../assets/images/' + product.gambar2" class="img-fluid shadow-sm produk-img thumbnail">
+                <img :src="'../assets/images/' + product.gambar3" class="img-fluid shadow-sm produk-img thumbnail">
+                <img :src="'../assets/images/' + product.gambar4" class="img-fluid shadow-sm produk-img thumbnail">
+              </div>
+              <font-awesome-icon icon="chevron-right" id="slideRight" class="arrow"></font-awesome-icon>
+            </div>
           </div>
           <div class="col-md-6">
             <h3>{{ product.nama }}</h3>
@@ -76,6 +88,7 @@ import Navbar from "@/components/Navbar.vue";
 import Loading from "@/components/Loading.vue";
 import LoadingPage from "@/components/LoadingPage.vue";
 import Alert from "@/components/Alert.vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { db } from "@/firebase/config";
 
 export default {
@@ -85,6 +98,7 @@ export default {
     Loading,
     LoadingPage,
     Alert,
+    FontAwesomeIcon
   },
   data() {
     return {
@@ -93,6 +107,7 @@ export default {
       order: {},
       error: null,
       errorMsg: "",
+      arrowImg: null,
     };
   },
   methods: {
@@ -169,15 +184,37 @@ export default {
     this.getProduct(this.$route.params.id);
 
     this.sizeShoes();
+
+    const thumbnails = document.getElementsByClassName('thumbnail')
+    const activeImages = document.getElementsByClassName('active-img')
+
+    for(let i=0; i < thumbnails.length; i++) {
+      thumbnails[i].addEventListener('click', function () {
+        if(activeImages.length > 0) {
+          activeImages[0].classList.remove('active-img')
+        }
+
+        this.classList.add('active-img')
+        document.getElementById('featured').src = this.src
+      })
+    }
+
+    const buttonRight = document.getElementById('slideRight')
+    const buttonLeft = document.getElementById('slideLeft')
+
+    buttonLeft.addEventListener('click', function () {
+      document.getElementById('slider').scrollLeft -= 50
+    })
+
+    buttonRight.addEventListener('click', function () {
+      document.getElementById('slider').scrollLeft += 50
+    })
+
   },
 };
 </script>
 
 <style scoped>
-.product-detail {
-  margin-bottom: 20px;
-}
-
 .item {
   text-decoration: none;
   color: #00bfa6;
@@ -211,5 +248,56 @@ export default {
 .produk-img {
   border-radius: 10px;
   width: 500px;
+}
+
+.thumbnail {
+  object-fit: cover;
+  max-width: 180px;
+  max-height: 100px;
+  cursor: pointer;
+  opacity: 0.5;
+  margin: 5px;
+  transition: 0.2s;
+}
+
+.thumbnail:hover {
+  opacity: 1;
+}
+
+.active-img {
+  opacity: 1;
+}
+
+#slide-wrapper {
+  max-width: 500px;
+  display: flex;
+  max-height: 100px;
+  align-items: center;
+}
+
+#slider {
+  width: 440px;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: hidden;
+}
+
+.arrow {
+  width: 30px;
+  height: 30px;
+  margin: 0 5px;
+  cursor: pointer;
+  color: #009783;
+  transition: .2s;
+}
+
+.arrow:nth-child(1):hover {
+  opacity: .5;
+  transform: translateX(-5px);
+}
+
+.arrow:nth-child(3):hover {
+  opacity: .5;
+  transform: translateX(5px);
 }
 </style>

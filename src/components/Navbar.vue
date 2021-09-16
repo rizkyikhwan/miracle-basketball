@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar">
+  <div id="navbar" class="navbar">
     <nav class="container custom-nav">
       <div class="branding">
         <router-link class="header" to="/"
@@ -67,11 +67,15 @@
                 </tbody>
               </table>
             </div>
-            <CartNavEmpty v-show="carts.length == 0"/>
+            <CartNavEmpty v-show="carts.length == 0" />
             <div class="row" v-show="carts.length >= 1">
               <div class="col-12">
-                <router-link type="button" to="/checkout" class="button-checkout shadow"
-                  >Checkout Now<br>(Rp {{ formatPrice(setTotal) }})</router-link
+                <router-link
+                  type="button"
+                  to="/checkout"
+                  class="button-checkout shadow"
+                  >Checkout Now<br />(Rp
+                  {{ formatPrice(setTotal) }})</router-link
                 >
               </div>
               <div class="col-12">
@@ -94,7 +98,10 @@
       <ul class="mobile-nav" v-show="mobileNav">
         <router-link class="link-mobile" to="/">Home</router-link>
         <router-link class="link-mobile" to="/product">Product</router-link>
-        <a class="link-mobile" style="cursor: pointer" @click="toggleCartNavMobile"
+        <a
+          class="link-mobile"
+          style="cursor: pointer"
+          @click="toggleCartNavMobile"
           >Cart <b-icon-bag></b-icon-bag
           ><span class="badge badge-success ml-2" v-if="carts.length">{{
             updateCart ? updateCart.length : carts.length
@@ -146,11 +153,15 @@
                 </tbody>
               </table>
             </div>
-            <CartNavMobileEmpty v-show="carts.length == 0"/>
+            <CartNavMobileEmpty v-show="carts.length == 0" />
             <div class="row" v-show="carts.length >= 1">
               <div class="col-12">
-                <router-link type="button" to="/checkout" class="button-checkout shadow"
-                  >Checkout Now<br>(Rp {{ formatPrice(setTotal) }})</router-link
+                <router-link
+                  type="button"
+                  to="/checkout"
+                  class="button-checkout shadow"
+                  >Checkout Now<br />(Rp
+                  {{ formatPrice(setTotal) }})</router-link
                 >
               </div>
               <div class="col-12">
@@ -162,19 +173,23 @@
           </div>
         </transition>
         <closeIconNav class="close-icon" @click="toggleMobileNav" />
-        <img src="../assets/images/logo-white.png" alt="logo" class="img-logo" />
+        <img
+          src="../assets/images/logo-white.png"
+          alt="logo"
+          class="img-logo"
+        />
       </ul>
     </transition>
   </div>
 </template>
 
 <script>
-import CartNavEmpty from "@/components/CartNavEmpty.vue"
-import CartNavMobileEmpty from "@/components/CartNavMobileEmpty.vue"
+import CartNavEmpty from "@/components/CartNavEmpty.vue";
+import CartNavMobileEmpty from "@/components/CartNavMobileEmpty.vue";
 import menuIcon from "../assets/icons/menu.svg";
 import closeIcon from "../assets/icons/close.svg";
 import closeIconNav from "../assets/icons/closeMobile.svg";
-import { db } from "@/firebase/config"
+import { db } from "@/firebase/config";
 
 export default {
   name: "Navbar",
@@ -220,14 +235,14 @@ export default {
         .then(async (result) => {
           if (result.isConfirmed) {
             try {
-              await db.collection('carts')
+              await db
+                .collection("carts")
                 .doc(id)
                 .delete()
                 .then(() => {
-                  this.Carts()
-                })
-            }
-            catch(err) {
+                  this.Carts();
+                });
+            } catch (err) {
               console.log(err);
             }
             this.$swal.fire("Deleted!", "Your order was deleted", "success");
@@ -251,27 +266,36 @@ export default {
       this.cartNav = !this.cartNav;
     },
     toggleCartNavMobile() {
-      this.cartNavMobile = !this.cartNavMobile
+      this.cartNavMobile = !this.cartNavMobile;
     },
     async Carts() {
       try {
-        const res = await db.collection('carts')
-          .get()
-        
-        this.carts = res.docs.map(doc => {
+        const res = await db.collection("carts").get();
+
+        this.carts = res.docs.map((doc) => {
           return {
             ...doc.data(),
-            id: doc.id
-          }
-        })
-      }
-      catch (err) {
+            id: doc.id,
+          };
+        });
+      } catch (err) {
         console.log(err);
       }
-    }
+    },
   },
   mounted() {
-    this.Carts()
+    this.Carts();
+
+    let prevScrollpos = window.pageYOffset;
+    window.onscroll = function () {
+      let currentScrollPos = window.pageYOffset;
+      if (prevScrollpos > currentScrollPos) {
+        document.querySelector(".navbar").style.top = "0";
+      } else {
+        document.querySelector(".navbar").style.top = "-100px";
+      }
+      prevScrollpos = currentScrollPos;
+    };
   },
   computed: {
     setTotal() {
@@ -306,7 +330,7 @@ export default {
 
 .custom-nav {
   display: flex;
-  padding: 25px 0;
+  padding: 12px 0;
 }
 
 .branding {
@@ -325,8 +349,13 @@ export default {
   font-family: "Rajdhani", sans-serif;
   font-size: 18px;
   letter-spacing: 1px;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.9);
   padding: 0 25px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  transition: 0.5s ease;
+  z-index: 99;
   /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06); */
   /* height: 75px; */
@@ -513,5 +542,4 @@ export default {
   text-decoration: none;
   transition: all 0.5s ease;
 }
-
 </style>

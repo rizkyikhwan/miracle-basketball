@@ -25,7 +25,9 @@ import {
   faMapMarkedAlt,
   faSearch,
   faShoppingCart,
-  faChevronUp
+  faChevronUp,
+  faChevronLeft,
+  faChevronRight
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faFacebook,
@@ -50,7 +52,9 @@ library.add(
   faSearch,
   faShoppingCart,
   faDiscord,
-  faChevronUp
+  faChevronUp,
+  faChevronLeft,
+  faChevronRight
 );
 
 Vue.use(VueToast);

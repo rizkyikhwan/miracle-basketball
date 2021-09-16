@@ -54,8 +54,10 @@
                   class="form-control"
                   min="1"
                   value="1"
+                  max="10"
                   v-model="order.order_quantity"
                 />
+                <small class="text-muted">Max: 10</small>
               </div>
               <div class="form-group">
                 <label for="size">Size</label>
@@ -119,7 +121,7 @@ export default {
       this.error = false
     },
     async addToCart() {
-      if (this.order.order_quantity && this.order.size) {
+      if (this.order.order_quantity <= 10 && this.order.size) {
         this.order.products = this.product;
         try {
           const loadingPage = document.querySelector("#loadingPage");
@@ -143,7 +145,7 @@ export default {
         }
       } else {
         this.error = true;
-        this.errorMsg = "Please fill out all the fields!";
+        this.errorMsg = "Please fill in the form correctly!";
       }
     },
     async getProduct(id) {

@@ -9,7 +9,7 @@
       <!-- Desktop -->
       <div class="nav-links" v-show="!mobile">
         <router-link class="link" to="/">Home</router-link>
-        <router-link class="link" to="/product">Product</router-link>
+        <router-link class="link" to="/product">Products</router-link>
         <a class="link" @click="toggleCartNav"
           >Cart <b-icon-bag></b-icon-bag
           ><span class="badge badge-success ml-2" v-if="carts.length">{{
@@ -97,7 +97,7 @@
     <transition name="mobile-nav">
       <ul class="mobile-nav" v-show="mobileNav">
         <router-link class="link-mobile" to="/">Home</router-link>
-        <router-link class="link-mobile" to="/product">Product</router-link>
+        <router-link class="link-mobile" to="/product">Products</router-link>
         <a
           class="link-mobile"
           style="cursor: pointer"

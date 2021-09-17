@@ -14,37 +14,58 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: {
+      title: 'Home'
+    }
   },
   {
     path: '/product',
-    name: 'Product',
-    component: Product
+    name: 'Products',
+    component: Product,
+    meta: {
+      title: 'Products'
+    }
   },
   {
     path: '/products/:id',
     name: 'ProductDetail',
-    component: ProductDetail
+    component: ProductDetail,
+    meta: {
+      title: 'Product Detail'
+    }
   },
   {
     path: '/cart',
     name: 'Cart',
-    component: Cart
+    component: Cart,
+    meta: {
+      title: 'Cart'
+    }
   },
   {
     path: '/checkout',
     name: 'Chekcout',
-    component: Checkout
+    component: Checkout,
+    meta: {
+      title: 'Checkout'
+    }
   },
   {
     path: '/order-success',
     name: 'OrderSuccess',
-    component: OrderSuccess
+    component: OrderSuccess,
+    meta: {
+      title: 'Order Success'
+    }
   },
   {
     path: '*',
     name: 'PageNotFound',
-    component: PageNotFound
+    component: PageNotFound,
+    meta: {
+      title: '404'
+    }
   }
 ]
 
@@ -52,6 +73,11 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+router.beforeEach((to, from ,next) => {
+  document.title = `${to.meta.title} | Miracle Store`;
+  next();
 })
 
 export default router

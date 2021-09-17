@@ -15,6 +15,7 @@
       </nav>
 
       <Loading id="loader" style="display: none" />
+      <LoadingPage id="loadingPage" style="display: none" />
       <div id="cart" v-show="carts.length >= 1">
         <div class="row">
           <div class="col">
@@ -89,6 +90,7 @@
 import Navbar from "@/components/Navbar.vue";
 import EmptyCart from "@/components/EmptyCart.vue";
 import Loading from "@/components/Loading.vue"
+import LoadingPage from "@/components/LoadingPage.vue"
 import { db } from "@/firebase/config"
 
 export default {
@@ -96,7 +98,8 @@ export default {
   components: {
     Navbar,
     EmptyCart,
-    Loading
+    Loading,
+    LoadingPage
   },
   data() {
     return {
@@ -156,8 +159,10 @@ export default {
     async Carts() {
       try {
         const loader = document.querySelector('#loader')
+        const loadingPage = document.querySelector('#loadingPage')
         const cartEmpty = document.querySelector('#cartEmpty')
 
+        loadingPage.style.display = 'block'
         loader.style.display = 'block'
         cartEmpty.style.display = 'none'
         const res = await db.collection('carts')
@@ -169,6 +174,7 @@ export default {
             id: doc.id
           }
         })
+        loadingPage.style.display = 'none'
         loader.style.display = 'none'
         cartEmpty.style.display = 'none'
       }

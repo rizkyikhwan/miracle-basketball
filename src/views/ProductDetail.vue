@@ -1,6 +1,6 @@
 <template>
   <div class="product-detail">
-    <LoadingPage id="loadingPage" style="display: none" />
+    <LoadingPage v-show="loadingPage" />
     <Navbar />
     <div class="container mb-5">
       <div class="row">
@@ -11,7 +11,7 @@
                 <router-link to="/" class="item">Home</router-link>
               </li>
               <li class="breadcrumb-item">
-                <router-link to="/product" class="item">Product</router-link>
+                <router-link to="/product" class="item">Products</router-link>
               </li>
               <li class="breadcrumb-item active" aria-current="page">
                 Product Detail
@@ -110,6 +110,7 @@ export default {
       error: null,
       errorMsg: "",
       arrowImg: null,
+      loadingPage: null
     };
   },
   methods: {
@@ -124,9 +125,7 @@ export default {
       if (this.order.order_quantity <= 10 && this.order.size) {
         this.order.products = this.product;
         try {
-          const loadingPage = document.querySelector("#loadingPage");
-
-          loadingPage.style.display = "block";
+          this.loadingPage = true;
           await db
             .collection("carts")
             .add(this.order)
@@ -139,7 +138,7 @@ export default {
                 dismissible: true,
               });
             });
-          loadingPage.style.display = "none";
+            this.loadingPage =false;
         } catch (err) {
           console.log(err);
         }

@@ -8,14 +8,14 @@
             <router-link to="/" class="item">Home</router-link>
           </li>
           <li class="breadcrumb-item">
-            <router-link to="/product" class="item">Product</router-link>
+            <router-link to="/product" class="item">Products</router-link>
           </li>
           <li class="breadcrumb-item active" aria-current="page">Cart</li>
         </ol>
       </nav>
 
       <Loading id="loader" style="display: none" />
-      <LoadingPage id="loadingPage" style="display: none" />
+      <LoadingPage v-show="loadingPage" />
       <div id="cart" v-show="carts.length >= 1">
         <div class="row">
           <div class="col">
@@ -105,6 +105,7 @@ export default {
     return {
       carts: [],
       order: {},
+      loadingPage: null
     };
   },
   methods: {
@@ -159,10 +160,9 @@ export default {
     async Carts() {
       try {
         const loader = document.querySelector('#loader')
-        const loadingPage = document.querySelector('#loadingPage')
         const cartEmpty = document.querySelector('#cartEmpty')
 
-        loadingPage.style.display = 'block'
+        this.loadingPage = true
         loader.style.display = 'block'
         cartEmpty.style.display = 'none'
         const res = await db.collection('carts')
@@ -174,7 +174,7 @@ export default {
             id: doc.id
           }
         })
-        loadingPage.style.display = 'none'
+        this.loadingPage = false
         loader.style.display = 'none'
         cartEmpty.style.display = 'none'
       }

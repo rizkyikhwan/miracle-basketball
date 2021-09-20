@@ -24,6 +24,33 @@
   outline: none;
 }
 
+.fadeInTop-enter {
+  opacity: 0;
+  transform: translateY(-5px);
+}
+
+.fadeInTop-leave-to {
+  opacity: 0;
+  transform: translateY(-5px);
+}
+
+.fadeInBottom-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fadeInBottom-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fadeInTop-enter-active,
+.fadeInTop-leave-active,
+.fadeInBottom-enter-active,
+.fadeInBottom-leave-active {
+  transition: all 0.2s;
+}
+
 .alert-enter-active {
   animation: wobble 0.5s ease;
 }
@@ -61,7 +88,8 @@
   .cart,
   .checkout,
   .pageNotFound,
-  .order-success {
+  .order-success,
+  .body-profile {
     margin-top: 25%;
   }
 }
@@ -73,7 +101,8 @@
   .cart,
   .checkout,
   .pageNotFound,
-  .order-success {
+  .order-success,
+  .body-profile {
     margin-top: 12%;
   }
 }
@@ -85,7 +114,8 @@
   .cart,
   .checkout,
   .pageNotFound,
-  .order-success {
+  .order-success,
+  .body-profile {
     margin-top: 10%;
   }
 }
@@ -97,7 +127,8 @@
   .cart,
   .checkout,
   .pageNotFound,
-  .order-success {
+  .order-success,
+  .body-profile {
     margin-top: 7%;
   }
 }

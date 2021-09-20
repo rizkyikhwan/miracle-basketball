@@ -1,6 +1,6 @@
 <template>
   <div class="checkout">
-    <LoadingPage id="loadingPage" style="display: none" />
+    <LoadingPage v-show="loadingPage" />
     <Navbar :updateCart="carts" />
     <div class="container">
       <nav aria-label="breadcrumb mt-2">
@@ -9,7 +9,7 @@
             <router-link to="/" class="item">Home</router-link>
           </li>
           <li class="breadcrumb-item">
-            <router-link to="/product" class="item">Product</router-link>
+            <router-link to="/product" class="item">Products</router-link>
           </li>
           <li class="breadcrumb-item">
             <router-link to="/cart" class="item">Cart</router-link>
@@ -356,6 +356,7 @@ export default {
       errorInputForm: null,
       errorMsgSelectCourier: "",
       errorMsgInputForm: "",
+      loadingPage: null
     };
   },
   methods: {
@@ -404,9 +405,7 @@ export default {
         })
         .then(async (result) => {
           if (result.isConfirmed) {
-            const loadingPage = document.querySelector("#loadingPage");
-
-            loadingPage.style.display = "block";
+            this.loadingPage = true
             await db
               .collection("carts")
               .doc(id)
@@ -415,7 +414,7 @@ export default {
                 this.Carts();
               });
 
-            loadingPage.style.display = "none";
+            this.loadingPage = false
             this.$toast.error("Your order was deleted", {
               type: "error",
               position: "top-right",

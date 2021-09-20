@@ -82,7 +82,7 @@
 import Navbar from "@/components/Navbar.vue";
 import Hero from "@/components/Hero.vue";
 import CardProduct from "@/components/CardProduct.vue";
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/Loading.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import gsap from "gsap";
 import { db } from "@/firebase/config"
@@ -177,20 +177,6 @@ export default {
   text-align: center;
   color: #fff;
 }
-
-/* .title::after {
-  content: "BENEFITS";
-  font-family: "Montserrat", sans-serif;
-  position: absolute;
-  font-size: 60px;
-  transform: translateX(-255px);
-  font-weight: 800;
-  letter-spacing: 5px;
-  line-height: 0.3;
-  color: rgb(243, 244, 248);
-  margin-top: 20px;
-  z-index: -1;
-} */
 
 .deskripsi {
   color: #fff;

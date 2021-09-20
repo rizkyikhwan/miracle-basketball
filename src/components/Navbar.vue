@@ -1,5 +1,6 @@
 <template>
   <div id="navbar" class="navbar">
+    <LoadingPage v-show="loadingPage" />
     <nav class="container custom-nav">
       <div class="branding">
         <router-link class="header" to="/"
@@ -18,7 +19,7 @@
         >
 
         <transition name="overlay">
-          <div class="overlay" v-show="cartNav"></div>
+          <div class="overlay" v-show="cartNav || login"></div>
         </transition>
 
         <transition name="cart-nav">
@@ -87,6 +88,51 @@
           </div>
         </transition>
       </div>
+
+      <a v-if="!user" @click="toggleModalLogin" class="nav-login" v-show="!mobile" v-b-tooltip.hover.bottomleft="'Login/Register'">
+        <font-awesome-icon
+          style="width: 25px"
+          class="icon-profileMenu"
+          :icon="{ prefix: 'fas', iconName: 'user-circle' }"
+        ></font-awesome-icon>
+      </a>
+      <transition name="fadeInBottom">
+        <ModalLogin v-show="login" @closeModalLogin="toggleModalLogin" />
+      </transition>
+      <div v-if="user" v-show="!mobile" @click="toggleProfileMenu" class="profile" ref="profile">
+        <span>{{ this.$store.state.profileInitials }}</span>
+        <transition name="fadeInTop">
+          <div v-show="profileMenu" class="profile-menu">
+          <div class="triangle"></div>
+            <div class="info">
+              <p class="initials">{{ this.$store.state.profileInitials }}</p>
+              <div class="right">
+                <p class="identity">Hello!</p>
+                <p class="identity">{{ this.$store.state.profileFirstName }} {{ this.$store.state.profileLastName }}</p>
+                <p class="identity">{{ this.$store.state.profileEmail }}</p>
+              </div>
+            </div>
+            <div class="options">
+              <div class="option">
+                <router-link class="option" :to="{name: 'Profile'}">
+                  <font-awesome-icon
+                    class="icon-profileMenu"
+                    :icon="{ prefix: 'far', iconName: 'user' }"
+                  ></font-awesome-icon>
+                  <p class="user">Profile</p>
+                </router-link>
+              </div>
+              <div @click="signOut" class="option">
+                <font-awesome-icon
+                  class="icon-profileMenu"
+                  :icon="{ prefix: 'fas', iconName: 'sign-out-alt' }"
+                ></font-awesome-icon>
+                <p class="user">Sign Out</p>
+              </div>
+            </div>
+          </div>
+        </transition>
+      </div>
     </nav>
 
     <!-- Mobile -->
@@ -107,6 +153,31 @@
             updateCart ? updateCart.length : carts.length
           }}</span></a
         >
+      <router-link v-if="!user" class="link-mobile" :to="{name: 'Login'}">
+        Login/Register
+      </router-link>
+       <div v-if="user" class="link-mobile">
+         <p>Hello!</p>
+         <p>{{ this.$store.state.profileFirstName }} {{ this.$store.state.profileLastName }}</p>
+         <div class="options-mobile">
+            <div class="option-mobile">
+              <router-link class="option-mobile" :to="{name: 'Profile'}">
+                <font-awesome-icon
+                  class="icon-profileMenu"
+                  :icon="{ prefix: 'far', iconName: 'user' }"
+                ></font-awesome-icon>
+                <p class="user">Profile</p>
+              </router-link>
+            </div>
+            <div @click="signOut" class="option-mobile">
+              <font-awesome-icon
+                class="icon-profileMenu"
+                :icon="{ prefix: 'fas', iconName: 'sign-out-alt' }"
+              ></font-awesome-icon>
+              <p class="user">Sign Out</p>
+            </div>
+          </div>
+       </div>
         <transition name="cart-navMobile">
           <div class="cart-navMobile" v-show="cartNavMobile">
             <div class="container">
@@ -186,10 +257,13 @@
 <script>
 import CartNavEmpty from "@/components/CartNavEmpty.vue";
 import CartNavMobileEmpty from "@/components/CartNavMobileEmpty.vue";
+import LoadingPage from "@/components/LoadingPage.vue"
+import ModalLogin from "@/components/ModalLogin.vue"
 import menuIcon from "../assets/icons/menu.svg";
 import closeIcon from "../assets/icons/close.svg";
 import closeIconNav from "../assets/icons/closeMobile.svg";
-import { db } from "@/firebase/config";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
+import { db, dbAuth } from "@/firebase/config";
 
 export default {
   name: "Navbar",
@@ -197,19 +271,25 @@ export default {
   components: {
     CartNavEmpty,
     CartNavMobileEmpty,
+    LoadingPage,
+    ModalLogin,
     menuIcon,
     closeIcon,
     closeIconNav,
+    FontAwesomeIcon
   },
   data() {
     return {
       order_quantity: [],
       carts: [],
+      login: null,
       mobile: null,
       mobileNav: null,
       cartNav: null,
       cartNavMobile: null,
       windowWidth: null,
+      profileMenu: null,
+      loadingPage: null
     };
   },
   created() {
@@ -220,34 +300,6 @@ export default {
     formatPrice(value) {
       let val = (value / 1).toFixed(0).replace(".");
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    },
-    async deleteOrder(id) {
-      this.$swal
-        .fire({
-          title: "Are you sure?",
-          text: "You won't be able to revert this!",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#d33",
-          cancelButtonColor: "#3085d6",
-          confirmButtonText: "Yes, delete it!",
-        })
-        .then(async (result) => {
-          if (result.isConfirmed) {
-            try {
-              await db
-                .collection("carts")
-                .doc(id)
-                .delete()
-                .then(() => {
-                  this.Carts();
-                });
-            } catch (err) {
-              console.log(err);
-            }
-            this.$swal.fire("Deleted!", "Your order was deleted", "success");
-          }
-        });
     },
     checkScreen() {
       this.windowWidth = window.innerWidth;
@@ -267,6 +319,48 @@ export default {
     },
     toggleCartNavMobile() {
       this.cartNavMobile = !this.cartNavMobile;
+    },
+    toggleProfileMenu(e) {
+      if (e.target === this.$refs.profile) {
+        this.profileMenu = !this.profileMenu;
+      }
+    },
+    toggleModalLogin() {
+      this.login = !this.login
+    },
+    signOut() {
+      dbAuth.signOut();
+      window.location.reload()
+    },
+    async deleteOrder(id) {
+      this.$swal
+        .fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, delete it!",
+        })
+        .then(async (result) => {
+          if (result.isConfirmed) {
+            try {
+              this.loadingPage = true
+              await db
+                .collection("carts")
+                .doc(id)
+                .delete()
+                .then(() => {
+                  this.Carts();
+                });
+              this.loadingPage = false
+            } catch (err) {
+              console.log(err);
+            }
+            this.$swal.fire("Deleted!", "Your order was deleted", "success");
+          }
+        });
     },
     async Carts() {
       try {
@@ -303,6 +397,9 @@ export default {
         return items + data.products.harga * data.order_quantity;
       }, 0);
     },
+    user() {
+      return this.$store.state.user;
+    }
   },
 };
 </script>
@@ -356,17 +453,146 @@ export default {
   top: 0;
   transition: 0.5s ease;
   z-index: 99;
-  /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06); */
-  /* height: 75px; */
 }
 
 .nav-links {
   position: relative;
   display: flex;
+  justify-content: center;
   flex: 1;
   align-items: center;
-  justify-content: flex-end;
+}
+
+.nav-login {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  cursor: pointer;
+  color: #00bfa6;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: .5s ease;
+}
+
+.nav-login:hover {
+  color: #00ffdd;
+}
+
+.profile {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: #fff;
+  background-color: #303030;
+}
+
+.profile span {
+  pointer-events: none;
+}
+
+.triangle {
+  position: absolute;
+  top: -8px;
+  left: 221px;
+  height: 0;
+  width: 0;
+  border-bottom: 15px solid #303030;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+}
+
+.profile-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 250px;
+  background-color: #303030;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px 1px rgba(0, 0, 0, 0.06);
+}
+
+.info {
+  display: flex;
+  cursor: default;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #fff;
+}
+
+.initials {
+  position: initial;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: #303030;
+  background-color: #fff;
+}
+
+.right {
+  flex: 1;
+  margin-left: 24px;
+}
+
+.right .identity:nth-child(1) {
+  font-size: 14px;
+}
+
+.right .identity:nth-child(2), .identity:nth-child(3) {
+  font-size: 12px;
+}
+
+.options {
+  padding: 15px;
+}
+
+.option {
+  text-decoration: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.options-mobile {
+  padding-top: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.option-mobile {
+  text-decoration: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+}
+
+.option-mobile:last-child {
+  cursor: pointer;
+}
+
+.icon-profileMenu {
+  width: 18px;
+  height: auto;
+}
+
+.user {
+  font-size: 14px;
+  margin-left: 12px;
+}
+
+.option:last-child {
+  margin-bottom: 0px;
+}
+
+p {
+  margin-bottom: 0px;
 }
 
 .menu-icon {

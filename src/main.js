@@ -1,6 +1,8 @@
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
+import store from "./store";
+// import { dbAuth } from "@/firebase/config"
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
@@ -27,7 +29,12 @@ import {
   faShoppingCart,
   faChevronUp,
   faChevronLeft,
-  faChevronRight
+  faChevronRight,
+  faLock,
+  faSignOutAlt,
+  faPhoneAlt,
+  faUserCircle,
+  faEdit
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faFacebook,
@@ -37,6 +44,7 @@ import {
   faLine,
   faDiscord
 } from "@fortawesome/free-brands-svg-icons";
+import { faEnvelope, faUser, faIdBadge } from "@fortawesome/free-regular-svg-icons";
 import "./assets/css/main.css";
 
 library.add(
@@ -54,7 +62,15 @@ library.add(
   faDiscord,
   faChevronUp,
   faChevronLeft,
-  faChevronRight
+  faChevronRight,
+  faEnvelope,
+  faLock,
+  faUser,
+  faIdBadge,
+  faSignOutAlt,
+  faPhoneAlt,
+  faUserCircle,
+  faEdit
 );
 
 Vue.use(VueToast);
@@ -66,7 +82,14 @@ Vue.use(Vuesax);
 
 Vue.config.productionTip = false;
 
-new Vue({
-  router,
-  render: (h) => h(App),
-}).$mount("#app");
+// let app;
+// dbAuth.onAuthStateChanged(() => {
+//   if (app) {
+    new Vue({
+      router,
+      store,
+      render: (h) => h(App),
+    }).$mount("#app");
+//   }
+// })
+

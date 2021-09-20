@@ -1,10 +1,12 @@
 <template>
+<transition name="alert">
   <div class="alert alert-danger" role="alert">
-    <strong>Attention!</strong> {{ errorMsg }}
     <button @click="$emit('closeAlert')" type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
-  </button>
+    </button>
+    <strong>Attention!</strong> <br> {{ errorMsg }}
   </div>
+</transition>
 </template>
 
 <script>

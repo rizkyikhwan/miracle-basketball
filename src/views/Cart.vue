@@ -37,15 +37,15 @@
                     <th scope="row">{{ index + 1 }}</th>
                     <td>
                       <img
-                        :src="'../assets/images/' + cart.products.gambar"
+                        :src="'../assets/images/' + cart.product.gambar"
                         class="img-fluid shadow-sm mb-3"
-                        :alt="cart.products.gambar"
+                        :alt="cart.product.gambar"
                         width="125px"
                       />
                     </td>
                     <td>
-                      <p>Name: {{ cart.products.nama }}</p>
-                      <p>Brand: {{ cart.products.brand }}</p>
+                      <p>Name: {{ cart.product.nama }}</p>
+                      <p>Brand: {{ cart.product.brand }}</p>
                       <p>Size : {{ cart.size }}</p>
                     </td>
                     <td class="text-center"> {{ cart.order_quantity }} </td>
@@ -56,12 +56,12 @@
                       ></b-icon-trash>
                     </td>
                     <td class="text-center">
-                      Rp {{ formatPrice(cart.products.harga) }}
+                      Rp {{ formatPrice(cart.product.harga) }}
                     </td>
                     <td class="text-center">
                       Rp
                       {{
-                        formatPrice(cart.order_quantity * cart.products.harga)
+                        formatPrice(cart.order_quantity * cart.product.harga)
                       }}
                     </td>
                   </tr>
@@ -104,7 +104,6 @@ export default {
   data() {
     return {
       carts: [],
-      order: {},
       loadingPage: null
     };
   },
@@ -166,6 +165,7 @@ export default {
         loader.style.display = 'block'
         cartEmpty.style.display = 'none'
         const res = await db.collection('carts')
+          .orderBy("date", "desc")
           .get()
 
         this.carts = res.docs.map(doc => {
@@ -189,7 +189,7 @@ export default {
   computed: {
     setTotal() {
       return this.carts.reduce(function (items, data) {
-        return items + data.products.harga * data.order_quantity;
+        return items + data.product.harga * data.order_quantity;
       }, 0);
     },
   },

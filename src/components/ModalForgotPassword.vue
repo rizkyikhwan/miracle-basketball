@@ -1,5 +1,12 @@
 <template>
   <div class="modal">
+    <transition name="overlay">
+      <div class="overlay" v-show="modalActive"></div>
+    </transition>
+    <transition name="fadeInBottom">
+      <Modal v-if="modalActive" :modalMessage="modalMessage" @closeModal="closeModal" />
+    </transition>
+    <LoadingPage v-if="loadingPage" />
     <div class="modal-content">
       <div class="modal-body">
         <LoadingPage v-if="loadingPage" />
@@ -9,89 +16,74 @@
             style="cursor: pointer"
           />
         </div>
-        <p>
-          Don't have an account?
-          <a class="router-link" @click="$emit('registerAccount')"
-            >Register</a
+         <p>
+          Already have an account?
+          <a class="router-link" @click="$emit('loginAccount')"
+            >Login</a
           >
         </p>
-        <h2>Login</h2>
-        <div class="line"></div>
-        <div class="inputs">
-          <div class="input">
-            <input type="text" placeholder="Email" v-model="email" />
-            <font-awesome-icon
-              class="icon"
-              :icon="{ prefix: 'far', iconName: 'envelope' }"
-            ></font-awesome-icon>
-          </div>
-          <div class="input">
-            <input type="password" placeholder="Passowrd" v-model="password" @keyup.enter="signIn">
-            <font-awesome-icon
-              class="icon"
-              :icon="{ prefix: 'fas', iconName: 'lock' }"
-            ></font-awesome-icon>
-          </div>
-          <transition name="fadeInTop">
-            <p class="error" v-if="error">{{ errorMsg }}</p>
-          </transition>
-          <a class="forgot-password" @click="$emit('forgotPassowrdAccount')"
-            >Forgot your Password?</a
-          >
+      <h2>Reset Password</h2>
+      <div class="line"></div>
+      <p style="padding: 0 30px">Enter your email to receive instructions on how to reset your password.</p>
+      <div class="inputs">
+        <div class="input">
+          <input type="text" placeholder="Email" v-model="email">
+          <font-awesome-icon class="icon" :icon="{prefix: 'far', iconName: 'envelope'}"></font-awesome-icon>
         </div>
-        <button @click="signIn">Sign In</button>
+        <transition name="fadeInTop">
+          <p class="error" v-if="error">{{ errorMsg }}</p>
+        </transition>
+      </div>
+      <button @click.prevent="resetPassword">Reset</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Modal from "@/components/Modal.vue"
 import LoadingPage from "@/components/LoadingPage.vue"
 import closeIcon from "../assets/icons/close.svg";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { dbAuth } from "@/firebase/config"
 
 export default {
-  name: 'ModalLogin',
   data() {
     return {
       email: "",
-      password: "",
+      modalMessage: "",
+      modalActive: null,
       loadingPage: null,
       error: null,
-      errorMsg: ""
-    };
+      errorMsg: null
+    }
   },
   components: {
+    Modal,
     LoadingPage,
     closeIcon,
     FontAwesomeIcon
   },
   methods: {
-    async signIn() {
-      try {
-        if (this.email !== "" && this.password !== "") {
-          this.loadingPage = true;
-          await dbAuth.signInWithEmailAndPassword(this.email, this.password)
-          .then(() => {
-            window.location.reload()
-            this.loadingPage = false;
-          })
-        }
-        this.error = true;
-        this.errorMsg = "Please fill out all the fields!"
-        this.loadingPage = false
-        } catch(err) {
-        this.error = true;
-        this.errorMsg = err.message;
-        this.loadingPage = false;
-      }
+    async resetPassword() {
+      this.loadingPage = true;
+      await dbAuth.sendPasswordResetEmail(this.email)
+        .then(() => {
+          this.modalActive = true;
+          this.modalMessage = "If your account exists, you will receive a email";
+          this.loadingPage = false
+        })
+        .catch((err) => {
+          this.error = true;
+          this.errorMsg = err.message;
+          this.loadingPage = false;
+        })
     },
-    closeAlert() {
-      this.error = !this.error
+    closeModal() {
+      this.modalActive = !this.modalActive
     }
-  },
-};
+  }
+}
 </script>
 
 <style scoped>
@@ -107,7 +99,7 @@ export default {
   justify-content: center;
   align-items: center;
   top: 0;
-  z-index: 101;
+  z-index: 100;
 }
 
 .modal-content {
@@ -130,7 +122,12 @@ export default {
 }
 
 .router-link {
+  cursor: pointer;
   color: #000;
+}
+
+.line {
+  margin: 5px auto 40px;
 }
 
 h2 {
@@ -173,7 +170,6 @@ input[type="number"] {
 .forgot-password {
   color: rgb(105, 105, 105);
   text-decoration: none;
-  cursor: pointer;
 }
 
 button {
@@ -198,23 +194,6 @@ button:hover {
 .error {
   color: red;
   margin-bottom: 0;
-}
-
-.line {
-  margin: 5px auto 40px;
-}
-
-.router-link {
-  cursor: pointer;
-}
-
-.router-link:hover {
-  color: #000;
-}
-
-.forgot-password:hover {
-  cursor: pointer;
-  color: #000;
 }
 
 @media (max-width: 576px) {

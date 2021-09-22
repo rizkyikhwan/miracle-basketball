@@ -20,6 +20,7 @@
           <input type="text" placeholder="Email" v-model="email">
           <font-awesome-icon class="icon" :icon="{prefix: 'far', iconName: 'envelope'}"></font-awesome-icon>
         </div>
+        <Alert v-show="error" :errorMsg="errorMsg" @closeAlert="closeAlert"/>
       </div>
       <button @click.prevent="resetPassword">Reset</button>
     </form>
@@ -28,9 +29,10 @@
 </template>
 
 <script>
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
+import Alert from "@/components/Alert.vue"
 import Modal from "@/components/Modal.vue"
 import LoadingPage from "@/components/LoadingPage.vue"
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { dbAuth } from "@/firebase/config"
 
 export default {
@@ -40,32 +42,38 @@ export default {
       email: "",
       modalActive: false,
       modalMessage: "",
-      loading: null
+      loading: null,
+      error: null,
+      errorMsg: null
     }
   },
   components: {
+    Alert,
     Modal,
     LoadingPage,
     FontAwesomeIcon
   },
   methods: {
-    resetPassword() {
+    async resetPassword() {
       this.loading = true;
-      dbAuth.sendPasswordResetEmail(this.email)
+      await dbAuth.sendPasswordResetEmail(this.email)
         .then(() => {
           this.modalMessage = "If your account exists, you will receive a email";
           this.loading = false;
           this.modalActive = true;
         })
         .catch((err) => {
-          this.modalMessage = err.message;
+          this.errorMsg = err.message;
           this.loading = false;
-          this.modalActive = true;
+          this.error = true;
         })
     },
     closeModal() {
       this.modalActive = !this.modalActive;
       this.email = "";
+    },
+    closeAlert() {
+      this.error = !this.error
     }
   }
 }

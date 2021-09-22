@@ -24,6 +24,32 @@
   outline: none;
 }
 
+/* Overlay */
+.overlay {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  right: 0;
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+
+.overlay-enter {
+  opacity: 0;
+}
+
+.overlay-leave-to {
+  opacity: 0;
+}
+
+.overlay-enter-active,
+.overlay-leave-active {
+  transition: all 0.5s ease;
+}
+
+/* Overlay */
+
 .fadeInTop-enter {
   opacity: 0;
   transform: translateY(-5px);

@@ -72,7 +72,7 @@ export default {
     return {
       firstName: "",
       lastName: "",
-      phoneNumber: null,
+      phoneNumber: "",
       email: "",
       password: "",
       error: null,
@@ -107,17 +107,14 @@ export default {
             this.loadingPage = false
             return
           }) 
-          .catch((err) => {
-            this.error = true
-            this.errorMsg = err.message
-            this.loadingPage = false
-        })
         }
         this.error = true;
         this.errorMsg = "Please fill out all the fields!"
         this.loadingPage = false
       } catch(err) {
-        console.log(err);
+        this.error = true;
+        this.errorMsg = err.message;
+        this.loadingPage = false;
       }
     },
   },

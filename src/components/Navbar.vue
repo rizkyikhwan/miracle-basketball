@@ -19,7 +19,7 @@
         >
 
         <transition name="overlay">
-          <div class="overlay" v-show="cartNav || login"></div>
+          <div class="overlay" v-show="cartNav || login || register || forgotPassword"></div>
         </transition>
 
         <transition name="cart-nav">
@@ -46,20 +46,20 @@
                     </td>
                     <td>
                       <img
-                        :src="'../assets/images/' + cart.products.gambar"
+                        :src="'../assets/images/' + cart.product.gambar"
                         class="img-fluid"
                         width="100px"
-                        :alt="cart.products.gambar"
+                        :alt="cart.product.gambar"
                       />
                     </td>
                     <td>
                       <div class="row">
                         <div class="col">
                           <p style="font-size: 12px">
-                            {{ cart.products.nama }}
+                            {{ cart.product.nama }}
                           </p>
                           <p style="font-size: 12px">
-                            Rp {{ formatPrice(cart.products.harga) }}
+                            Rp {{ formatPrice(cart.product.harga) }}
                           </p>
                         </div>
                       </div>
@@ -96,9 +96,19 @@
           :icon="{ prefix: 'fas', iconName: 'user-circle' }"
         ></font-awesome-icon>
       </a>
+
       <transition name="fadeInBottom">
-        <ModalLogin v-show="login" @closeModalLogin="toggleModalLogin" />
+        <ModalLogin v-show="login" @closeModal="toggleModalLogin" @registerAccount="registerAccount" @forgotPassowrdAccount="forgotPasswordAccount" />
       </transition>
+
+      <transition name="fadeInBottom">
+        <ModalRegister v-show="register" @closeModal="toggleModalRegister" @loginAccount="loginAccount" />
+      </transition> 
+
+      <transition name="fadeInBottom">
+        <ModalForgotPassword v-show="forgotPassword" @closeModal="toggleModalForgotPassword" @loginAccount="loginAccount" />
+      </transition>
+
       <div v-if="user" v-show="!mobile" @click="toggleProfileMenu" class="profile" ref="profile">
         <span>{{ this.$store.state.profileInitials }}</span>
         <transition name="fadeInTop">
@@ -138,7 +148,7 @@
     <!-- Mobile -->
     <menuIcon class="menu-icon" @click="toggleMobileNav" v-show="mobile" />
     <transition name="overlay">
-      <div class="overlay" v-show="mobileNav"></div>
+      <div class="overlay" v-show="mobileNav || login || register || forgotPassword"></div>
     </transition>
     <transition name="mobile-nav">
       <ul class="mobile-nav" v-show="mobileNav">
@@ -153,9 +163,9 @@
             updateCart ? updateCart.length : carts.length
           }}</span></a
         >
-      <router-link v-if="!user" class="link-mobile" :to="{name: 'Login'}">
+      <a v-if="!user" class="link-mobile" style="cursor: pointer" @click="toggleModalLoginMobile">
         Login/Register
-      </router-link>
+      </a>
        <div v-if="user" class="link-mobile">
          <p>Hello!</p>
          <p>{{ this.$store.state.profileFirstName }} {{ this.$store.state.profileLastName }}</p>
@@ -202,20 +212,20 @@
                     </td>
                     <td>
                       <img
-                        :src="'../assets/images/' + cart.products.gambar"
+                        :src="'../assets/images/' + cart.product.gambar"
                         class="img-fluid"
                         width="100px"
-                        :alt="cart.products.gambar"
+                        :alt="cart.product.gambar"
                       />
                     </td>
                     <td>
                       <div class="row">
                         <div class="col">
                           <p style="font-size: 12px">
-                            {{ cart.products.nama }}
+                            {{ cart.product.nama }}
                           </p>
                           <p style="font-size: 12px">
-                            Rp {{ formatPrice(cart.products.harga) }}
+                            Rp {{ formatPrice(cart.product.harga) }}
                           </p>
                         </div>
                       </div>
@@ -259,6 +269,8 @@ import CartNavEmpty from "@/components/CartNavEmpty.vue";
 import CartNavMobileEmpty from "@/components/CartNavMobileEmpty.vue";
 import LoadingPage from "@/components/LoadingPage.vue"
 import ModalLogin from "@/components/ModalLogin.vue"
+import ModalRegister from "@/components/ModalRegister.vue"
+import ModalForgotPassword from "@/components/ModalForgotPassword.vue"
 import menuIcon from "../assets/icons/menu.svg";
 import closeIcon from "../assets/icons/close.svg";
 import closeIconNav from "../assets/icons/closeMobile.svg";
@@ -273,6 +285,8 @@ export default {
     CartNavMobileEmpty,
     LoadingPage,
     ModalLogin,
+    ModalRegister,
+    ModalForgotPassword,
     menuIcon,
     closeIcon,
     closeIconNav,
@@ -283,6 +297,8 @@ export default {
       order_quantity: [],
       carts: [],
       login: null,
+      register: null,
+      forgotPassword: null,
       mobile: null,
       mobileNav: null,
       cartNav: null,
@@ -327,6 +343,29 @@ export default {
     },
     toggleModalLogin() {
       this.login = !this.login
+    },
+    toggleModalLoginMobile() {
+      this.login = !this.login
+      this.mobileNav = false;
+    },
+    toggleModalRegister() {
+      this.register = !this.register
+    },
+    toggleModalForgotPassword() {
+      this.forgotPassword = !this.forgotPassword
+    },
+    loginAccount() {
+      this.register = false;
+      this.forgotPassword = false;
+      this.login = true;
+    },
+    registerAccount() {
+      this.login = false;
+      this.register = true;
+    },
+    forgotPasswordAccount() {
+      this.login = false;
+      this.forgotPassword = true;
     },
     signOut() {
       dbAuth.signOut();
@@ -380,21 +419,21 @@ export default {
   mounted() {
     this.Carts();
 
-    let prevScrollpos = window.pageYOffset;
+    let prevScroll = window.pageYOffset;
     window.onscroll = function () {
-      let currentScrollPos = window.pageYOffset;
-      if (prevScrollpos > currentScrollPos) {
+      let currentScroll = window.pageYOffset;
+      if (prevScroll > currentScroll) {
         document.querySelector(".navbar").style.top = "0";
       } else {
         document.querySelector(".navbar").style.top = "-100px";
       }
-      prevScrollpos = currentScrollPos;
+      prevScroll = currentScroll;
     };
   },
   computed: {
     setTotal() {
       return this.carts.reduce(function (items, data) {
-        return items + data.products.harga * data.order_quantity;
+        return items + data.product.harga * data.order_quantity;
       }, 0);
     },
     user() {
@@ -638,9 +677,7 @@ p {
 .cart-nav-enter-active,
 .cart-nav-leave-active,
 .cart-navMobile-enter-active,
-.cart-navMobile-leave-active,
-.overlay-enter-active,
-.overlay-leave-active {
+.cart-navMobile-leave-active {
   transition: all 0.5s ease;
 }
 
@@ -666,14 +703,6 @@ p {
 
 .cart-navMobile-leave-to {
   transform: translateX(-400px);
-}
-
-.overlay-enter {
-  opacity: 0;
-}
-
-.overlay-leave-to {
-  opacity: 0;
 }
 
 .router-link-exact-active {
@@ -719,16 +748,6 @@ p {
   background-color: #fff;
   top: 0;
   left: 0;
-  z-index: 2;
-}
-
-.overlay {
-  width: 100%;
-  height: 100%;
-  top: 0;
-  right: 0;
-  position: fixed;
-  background-color: rgba(0, 0, 0, 0.5);
   z-index: 2;
 }
 

@@ -123,12 +123,17 @@ export default {
     },
     async addToCart() {
       if (this.order.order_quantity <= 10 && this.order.size) {
-        this.order.products = this.product;
+        this.order.product = this.product;
         try {
           this.loadingPage = true;
+          const timestamp = await Date.now()
           await db
-            .collection("carts")
-            .add(this.order)
+            .collection("carts").doc()
+            .set({
+              ...this.order,
+              profileId: this.profileId,
+              date: timestamp
+            })
             .then(() => {
               this.$router.push({ name: "Cart" });
               this.$toast.success("Your order is added to the cart", {
@@ -212,6 +217,11 @@ export default {
     })
 
   },
+  computed: {
+    profileId() {
+      return this.$store.state.profileId
+    }
+  }
 };
 </script>
 

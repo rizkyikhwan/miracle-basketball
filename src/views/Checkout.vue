@@ -40,7 +40,7 @@
                 <div class="row no-gutters">
                   <div class="d-flex justify-content-center">
                     <img
-                      :src="'../assets/images/' + cart.products.gambar"
+                      :src="'../assets/images/' + cart.product.gambar"
                       style="max-width: 200px"
                       class="img-product"
                     />
@@ -50,10 +50,10 @@
                       class="deleteItem"
                       @click="deleteOrder(cart.id)"
                     />
-                    <h5 class="card-title">{{ cart.products.nama }}</h5>
-                    <small>{{ cart.products.brand }}</small>
+                    <h5 class="card-title">{{ cart.product.nama }}</h5>
+                    <small>{{ cart.product.brand }}</small>
                     <p class="card-text">
-                      Rp {{ formatPrice(cart.products.harga) }}
+                      Rp {{ formatPrice(cart.product.harga) }}
                     </p>
                     <p>Size: {{ cart.size }}</p>
                     <div class="d-flex justify-content-between">
@@ -61,7 +61,7 @@
                       <p>
                         Subtotal: Rp
                         {{
-                          formatPrice(cart.products.harga * cart.order_quantity)
+                          formatPrice(cart.product.harga * cart.order_quantity)
                         }}
                       </p>
                     </div>
@@ -87,13 +87,13 @@
                       id="exampleFormControlTextarea1"
                       placeholder="Coments"
                       rows="3"
-                      v-model="order.comments"
+                      v-model="comments"
                     ></textarea>
                   </div>
                   <hr />
                   <div class="form-group">
                     <label for="Kurir">Kurir*</label>
-                    <select class="form-control" v-model="order.kurir" required>
+                    <select class="form-control" v-model="kurir" required>
                       <option>JNE - REG</option>
                       <option>J&T Express - Regular / EZ</option>
                       <option>TIKI - Reg</option>
@@ -126,7 +126,8 @@
                         <input
                           type="text"
                           class="form-control"
-                          v-model="order.nama"
+                          disabled
+                          v-model="fullName"
                         />
                       </div>
                       <div class="form-group col-md-6">
@@ -134,7 +135,8 @@
                         <input
                           type="email"
                           class="form-control"
-                          v-model="order.email"
+                          disabled
+                          v-model="email"
                         />
                       </div>
                     </div>
@@ -145,7 +147,8 @@
                           type="number"
                           class="form-control"
                           min="1"
-                          v-model="order.noHp"
+                          disabled
+                          v-model="phoneNumber"
                         />
                       </div>
                       <div class="form-group col-md-6">
@@ -153,7 +156,7 @@
                         <input
                           type="number"
                           class="form-control"
-                          v-model="order.kodepos"
+                          v-model="kodepos"
                           min="1"
                         />
                       </div>
@@ -163,7 +166,7 @@
                         <label for="inputAddress">Alamat</label>
                         <textarea
                           class="form-control"
-                          v-model="order.alamat"
+                          v-model="alamat"
                           rows="3"
                           placeholder="Provinsi, Kabupaten/Kota, ..."
                         />
@@ -189,13 +192,13 @@
                 <div class="card-body">
                   <div class="row" v-for="cart in carts" :key="cart.id">
                     <div class="col-6">
-                      <p class="name-product">{{ cart.products.nama }}</p>
+                      <p class="name-product">{{ cart.product.nama }}</p>
                       <p class="size">Size: {{ cart.size }}</p>
                     </div>
                     <div class="col-6">
                       <p class="float-right">
                         {{ cart.order_quantity }} × Rp
-                        {{ formatPrice(cart.products.harga) }}
+                        {{ formatPrice(cart.product.harga) }}
                       </p>
                     </div>
                   </div>
@@ -351,7 +354,10 @@ export default {
   data() {
     return {
       carts: [],
-      order: {},
+      comments: "",
+      kurir: "",
+      kodepos: "",
+      alamat: "",
       errorCourier: null,
       errorInputForm: null,
       errorMsgSelectCourier: "",
@@ -365,8 +371,7 @@ export default {
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     selectCourier() {
-      if (this.order.kurir) {
-        this.order.carts = this.carts;
+      if (this.kurir) {
         return true;
       }
       this.errorCourier = true;
@@ -375,13 +380,12 @@ export default {
     },
     inputForm() {
       if (
-        this.order.nama &&
-        this.order.email &&
-        this.order.noHp &&
-        this.order.alamat &&
-        this.order.kodepos
+        this.fullName &&
+        this.email &&
+        this.phoneNumber &&
+        this.alamat &&
+        this.kodepos
       ) {
-        this.order.carts = this.carts;
         return true;
       }
       this.errorInputForm = true;
@@ -426,18 +430,26 @@ export default {
     },
     async orders() {
       if (
-        this.order.kurir &&
-        this.order.nama &&
-        this.order.email &&
-        this.order.noHp &&
-        this.order.alamat &&
-        this.order.kodepos
+        this.kurir &&
+        this.fullName &&
+        this.email &&
+        this.phoneNumber &&
+        this.alamat &&
+        this.kodepos
       ) {
-        this.order.carts = this.carts;
         try {
           await db
-            .collection("orders")
-            .add(this.order)
+            .collection("orders").doc()
+            .set({
+              carts: this.carts,
+              comments: this.comments,
+              kurir: this.kurir,
+              fullName: this.fullName,
+              email: this.email,
+              phoneNumber: this.phoneNumber,
+              kodepos: this.kodepos,
+              alamat: this.alamat,
+            })
             .then(() => {
               this.carts.map((item) => {
                 return db.collection("carts").doc(item.id).delete();
@@ -492,9 +504,32 @@ export default {
   computed: {
     setTotal() {
       return this.carts.reduce((items, data) => {
-        return items + data.products.harga * data.order_quantity;
+        return items + data.product.harga * data.order_quantity;
       }, 0);
     },
+    firstName: {
+      get() {
+        return this.$store.state.profileFirstName;
+      }
+    },
+    lastName: {
+      get() {
+        return this.$store.state.profileLastName;
+      }
+    },
+    fullName() {
+      return this.firstName + " " + this.lastName;
+    },
+    email: {
+      get() {
+        return this.$store.state.profileEmail;
+      }
+    },
+    phoneNumber: {
+      get() {
+        return this.$store.state.profilePhoneNumber;
+      }
+    }
   },
 };
 </script>

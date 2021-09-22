@@ -42,8 +42,8 @@ export default {
   },
   data() {
     return {
-      email: null,
-      password: null,
+      email: "",
+      password: "",
       loadingPage: null,
       error: null,
       errorMsg: ""
@@ -55,20 +55,21 @@ export default {
     },
     async signIn() {
       try {
-        this.loadingPage = true;
-        await dbAuth.signInWithEmailAndPassword(this.email, this.password)
-        .then(() => {
-          this.$router.push({name: "Products"})
-          this.loadingPage = false;
-        })
-        .catch((err) => {
-          this.error = true
-          this.errorMsg = err.message
-          this.loadingPage = false
-        })
-      }
-      catch(err) {
-        console.log(err);
+        if (this.email !== "" && this.password !== "") {
+          this.loadingPage = true;
+          await dbAuth.signInWithEmailAndPassword(this.email, this.password)
+          .then(() => {
+            this.$router.push({name: "Products"})
+            this.loadingPage = false;
+          })
+        }
+        this.error = true;
+        this.errorMsg = "Please fill out all the fields!"
+        this.loadingPage = false
+        } catch(err) {
+        this.error = true;
+        this.errorMsg = err.message;
+        this.loadingPage = false;
       }
     }
   }

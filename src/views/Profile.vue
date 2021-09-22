@@ -1,10 +1,16 @@
 <template>
   <div class="profile">
+    <transition name="overlay">
+      <div class="overlay" style="z-index: 100" v-show="modalActive"></div>
+    </transition>
     <Navbar />
     <div class="body-profile">
+    <transition name="fadeInBottom">
     <Modal v-if="modalActive" :modalMessage="modalMessage" @closeModal="closeModal" />
+    </transition>
       <div class="container">
         <h2>Account Settings</h2>
+        <div class="line" style="margin: auto"></div>
         <div class="profile-info row d-flex justify-content-around">
           <div class="align-items-start mt-5">
             <div class="row">
@@ -56,7 +62,7 @@
                     class="icon-profileMenu"
                     :icon="{ prefix: 'fas', iconName: 'sign-out-alt' }"
                   ></font-awesome-icon> Sign Out</button>
-                <button v-show="edit" class="manage-account" @click="updateProfile">Save Changes</button>
+                <button v-show="edit" class="manage-account success" @click="updateProfile">Save Changes</button>
               </div>
             </div>
           </div>
@@ -237,13 +243,22 @@ button:hover {
 }
 
 .danger {
-  border: 2px solid red;
-  color: red;
+  border: 2px solid #dc3545;
+  color: #dc3545;
 }
 
 .danger:hover {
-  background-color: red;
+  background-color: #dc3545;
   color: #fff;
+}
+
+.success {
+  border: 2px solid #28a745;
+  color: #28a745;
+}
+
+.success:hover {
+  background-color: #28a745;
 }
 
 .icon {

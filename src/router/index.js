@@ -85,7 +85,7 @@ const routes = [
     component: Checkout,
     meta: {
       title: 'Checkout',
-      requireAuth: false
+      requireAuth: true
     }
   },
   {
@@ -94,7 +94,7 @@ const routes = [
     component: OrderSuccess,
     meta: {
       title: 'Order Success',
-      requireAuth: false
+      requireAuth: true
     }
   },
   {
@@ -134,7 +134,7 @@ router.beforeEach(async (to, from, next) => {
     if (user) {
       return next()
     }
-    return next({name: 'Home'})
+    return next({name: 'Login'})
   }
   return next()
 })

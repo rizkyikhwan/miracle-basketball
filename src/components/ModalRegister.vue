@@ -10,14 +10,39 @@
           />
         </div>
         <p>
-          Don't have an account?
-          <a class="router-link" @click="$emit('registerAccount')"
-            >Register</a
+          Already have an account?
+          <a class="router-link" @click="$emit('loginAccount')"
+            >Login</a
           >
         </p>
-        <h2>Login</h2>
+        <h2>Create Your Account</h2>
         <div class="line"></div>
         <div class="inputs">
+          <div class="input">
+            <input type="text" placeholder="First Name" v-model="firstName" />
+            <font-awesome-icon
+              class="icon"
+              :icon="{ prefix: 'far', iconName: 'user' }"
+            ></font-awesome-icon>
+          </div>
+          <div class="input">
+            <input type="text" placeholder="Last Name" v-model="lastName" />
+            <font-awesome-icon
+              class="icon"
+              :icon="{ prefix: 'far', iconName: 'user' }"
+            ></font-awesome-icon>
+          </div>
+          <div class="input">
+            <input
+              type="number"
+              placeholder="Phone Number"
+              v-model="phoneNumber"
+            />
+            <font-awesome-icon
+              class="icon"
+              :icon="{ prefix: 'fas', iconName: 'phone-alt' }"
+            ></font-awesome-icon>
+          </div>
           <div class="input">
             <input type="text" placeholder="Email" v-model="email" />
             <font-awesome-icon
@@ -26,71 +51,82 @@
             ></font-awesome-icon>
           </div>
           <div class="input">
-            <input type="password" placeholder="Passowrd" v-model="password" @keyup.enter="signIn">
+            <input type="password" placeholder="Passowrd" v-model="password" />
             <font-awesome-icon
               class="icon"
               :icon="{ prefix: 'fas', iconName: 'lock' }"
             ></font-awesome-icon>
           </div>
           <transition name="fadeInTop">
-            <p class="error" v-if="error">{{ errorMsg }}</p>
+          <p class="error" v-if="error">{{ errorMsg }}</p>
           </transition>
-          <a class="forgot-password" @click="$emit('forgotPassowrdAccount')"
-            >Forgot your Password?</a
-          >
         </div>
-        <button @click="signIn">Sign In</button>
+        <button @click.prevent="register">Sign Up</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import LoadingPage from "@/components/LoadingPage.vue"
+import LoadingPage from "@/components/LoadingPage.vue";
 import closeIcon from "../assets/icons/close.svg";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { dbAuth } from "@/firebase/config"
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { db, dbAuth } from "@/firebase/config";
 
 export default {
-  name: 'ModalLogin',
+  name: "ModalRegister",
   data() {
     return {
+      firstName: "",
+      lastName: "",
+      phoneNumber: "",
       email: "",
       password: "",
       loadingPage: null,
       error: null,
-      errorMsg: ""
-    };
+      errorMsg: null
+    }
   },
   components: {
     LoadingPage,
     closeIcon,
-    FontAwesomeIcon
+    FontAwesomeIcon,
   },
   methods: {
-    async signIn() {
+    async register() {
       try {
-        if (this.email !== "" && this.password !== "") {
+        if (this.firstName !== "" && this.lastName !== "" && this.phoneNumber !== "" && this.password !== "") {
           this.loadingPage = true;
-          await dbAuth.signInWithEmailAndPassword(this.email, this.password)
+          const createUser = dbAuth.createUserWithEmailAndPassword(this.email, this.password);
+          const result = await createUser;
+          const dataBase = db.collection('users').doc(result.user.uid)
+          await dataBase.set({
+            firstName : this.firstName,
+            lastName : this.lastName,
+            phoneNumber : this.phoneNumber,
+            email : this.email
+          })
           .then(() => {
             window.location.reload()
+            this.loadingPage = false;
+          })
+          .catch((err) => {
+            this.error = true;
+            this.errorMsg = err.message;
             this.loadingPage = false;
           })
         }
         this.error = true;
         this.errorMsg = "Please fill out all the fields!"
         this.loadingPage = false
-        } catch(err) {
+      }
+      catch(err) {
         this.error = true;
         this.errorMsg = err.message;
         this.loadingPage = false;
       }
-    },
-    closeAlert() {
-      this.error = !this.error
     }
-  },
+  }
 };
 </script>
 
@@ -107,7 +143,7 @@ export default {
   justify-content: center;
   align-items: center;
   top: 0;
-  z-index: 101;
+  z-index: 100;
 }
 
 .modal-content {
@@ -173,7 +209,6 @@ input[type="number"] {
 .forgot-password {
   color: rgb(105, 105, 105);
   text-decoration: none;
-  cursor: pointer;
 }
 
 button {
@@ -200,6 +235,10 @@ button:hover {
   margin-bottom: 0;
 }
 
+.modal-content {
+  height: 600px;
+}
+
 .line {
   margin: 5px auto 40px;
 }
@@ -209,11 +248,6 @@ button:hover {
 }
 
 .router-link:hover {
-  color: #000;
-}
-
-.forgot-password:hover {
-  cursor: pointer;
   color: #000;
 }
 

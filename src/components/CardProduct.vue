@@ -1,8 +1,17 @@
 <template>
   <div class="card">
+    <div class="overlay-card d-flex flex-column justify-content-center align-items-center">
+      <img :src="'../assets/logo/' + product.logo" :alt="product.brand" style="position: absolute">
+      <p style="font-weight: 500">{{ product.nama }}</p>
+      <div class="detail-btn d-flex justify-content-center align-items-center">
+        <span class="detail">
+          Check Product
+        </span>
+      </div>
+    </div>
     <img
       :src="'../assets/images/' + product.gambar"
-      class="card-img-top"
+      class="card-img-top blur"
       :alt="product.gambar"
     />
     <div class="card-body text-left">
@@ -16,6 +25,7 @@
 </template>
 
 <script>
+
 export default {
   name: "CardProduct",
   props: ["product"],
@@ -30,14 +40,19 @@ export default {
 
 <style scoped>
 .card {
-    border: 0;
-    color: #000;
-    margin-bottom: 25px;
-    transition: .2s ease;
+  border: 0;
+  color: #000;
+  margin-bottom: 25px;
+  overflow: hidden;
+  transition: .2s ease;
 }
 
 .card:hover {
-    box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+  position: relative;
 }
 
 .nama-produk {
@@ -46,6 +61,61 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 300px;
+}
+
+.overlay-card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 9;
+}
+
+.detail {
+  position: absolute;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  color: #fff;
+}
+
+.icon {
+  position: absolute;
+  visibility: hidden;
+  transform: translateY(-50px);
+}
+
+.detail-btn {
+  position: relative;
+  width: 100%;
+  height: 15.5%;
+  background-color: #00bfa6;
+  color: #252525;
+  overflow: hidden;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-radius: 10px 10px 5px 5px;
+  box-shadow: 2px 2px 30px rgba(0, 0, 0, 0.2);
+  transform: translateY(250%);
+}
+
+.overlay-card {
+  visibility: hidden;
+}
+
+.card:hover .overlay-card {
+  visibility: visible;
+  animation: fade 0.3s ease;
+}
+
+@keyframes fade {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 768px) {

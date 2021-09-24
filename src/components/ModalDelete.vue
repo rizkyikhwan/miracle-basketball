@@ -3,7 +3,7 @@
     <div class="modal-content-delete">
       <h3 class="text-center">Delete Item</h3>
       <div class="body-modal">
-        <p>Hapus sepatu {{ cart.products.nama }} dari keranjang?</p>
+        <p>Hapus sepatu {{ cart.product.nama }} dari keranjang?</p>
       </div>
       <div class="d-flex justify-content-center">
         <div class="row">

@@ -18,8 +18,8 @@ export default {
   components: {
     Footer
   },
-  created() {
-    dbAuth.onAuthStateChanged((user) => {
+  async created() {
+    await dbAuth.onAuthStateChanged((user) => {
       this.$store.commit("updateUser", user)
       if (user) {
         this.$store.dispatch("getCurrentUser")

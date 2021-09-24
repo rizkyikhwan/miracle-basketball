@@ -13,7 +13,7 @@
         <router-link class="link" to="/product">Products</router-link>
         <a class="link" @click="toggleCartNav"
           >Cart <b-icon-bag></b-icon-bag
-          ><span class="badge badge-success ml-2" v-if="carts.length">{{
+          ><span class="badge badge-success ml-2" style="position: absolute" v-if="carts.length">{{
             updateCart ? updateCart.length : carts.length
           }}</span></a
         >
@@ -73,15 +73,10 @@
               <div class="col-12">
                 <router-link
                   type="button"
-                  to="/checkout"
+                  to="/cart"
                   class="button-checkout shadow"
-                  >Checkout Now<br />(Rp
+                  >View Cart<br />(Rp
                   {{ formatPrice(setTotal) }})</router-link
-                >
-              </div>
-              <div class="col-12">
-                <router-link type="button" to="/cart" class="button"
-                  >View Cart</router-link
                 >
               </div>
             </div>
@@ -239,15 +234,10 @@
               <div class="col-12">
                 <router-link
                   type="button"
-                  to="/checkout"
+                  to="/cart"
                   class="button-checkout shadow"
-                  >Checkout Now<br />(Rp
+                  >View Cart<br />(Rp
                   {{ formatPrice(setTotal) }})</router-link
-                >
-              </div>
-              <div class="col-12">
-                <router-link type="button" to="/cart" class="button"
-                  >View Cart</router-link
                 >
               </div>
             </div>
@@ -371,6 +361,22 @@ export default {
       dbAuth.signOut();
       window.location.reload()
     },
+    async Carts() {
+      try {
+        const res = await db.collection(dbAuth.currentUser.uid)
+          .orderBy("date", "desc")
+          .get();
+
+        this.carts = res.docs.map((doc) => {
+          return {
+            ...doc.data(),
+            id: doc.id,
+          };
+        });
+      } catch (err) {
+        // console.log(err);
+      }
+    },
     async deleteOrder(id) {
       this.$swal
         .fire({
@@ -387,7 +393,7 @@ export default {
             try {
               this.loadingPage = true
               await db
-                .collection("carts")
+                .collection(dbAuth.currentUser.uid)
                 .doc(id)
                 .delete()
                 .then(() => {
@@ -397,27 +403,20 @@ export default {
             } catch (err) {
               console.log(err);
             }
-            this.$swal.fire("Deleted!", "Your order was deleted", "success");
+            this.$toast.error("Your order was deleted", {
+              type: "error",
+              position: "top-right",
+              duration: 3000,
+              dismissible: true,
+            })
           }
         });
     },
-    async Carts() {
-      try {
-        const res = await db.collection("carts").get();
-
-        this.carts = res.docs.map((doc) => {
-          return {
-            ...doc.data(),
-            id: doc.id,
-          };
-        });
-      } catch (err) {
-        console.log(err);
-      }
-    },
+  },
+  async beforeMount() {
+    await this.Carts()
   },
   mounted() {
-    this.Carts();
 
     let prevScroll = window.pageYOffset;
     window.onscroll = function () {

@@ -176,7 +176,7 @@ h2 {
   align-self: center;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: 10px;
 }
 
 .manage-account {
@@ -288,7 +288,12 @@ button:hover {
   }
 
   .danger {
-    background-color: red;
+    background-color: #dc3545;
+    color: #fff;
+  }
+
+  .success {
+    background-color:#28a745;
     color: #fff;
   }
 }

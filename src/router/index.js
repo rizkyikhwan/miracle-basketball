@@ -7,7 +7,6 @@ import Register from '../views/Register.vue'
 import ForgotPassword from '../views/ForgotPassword.vue'
 import ProductDetail from '../views/ProductDetail.vue'
 import Cart from '../views/Cart.vue'
-import Checkout from '../views/Checkout.vue'
 import OrderSuccess from '../views/OrderSuccess.vue'
 import Profile from '../views/Profile.vue'
 import PageNotFound from '../views/PageNotFound.vue'
@@ -76,15 +75,6 @@ const routes = [
     component: Cart,
     meta: {
       title: 'Cart',
-      requireAuth: false
-    }
-  },
-  {
-    path: '/checkout',
-    name: 'Chekcout',
-    component: Checkout,
-    meta: {
-      title: 'Checkout',
       requireAuth: true
     }
   },

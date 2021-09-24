@@ -10,6 +10,7 @@
         <h2 class="arrival">New <strong>Arrival</strong></h2>
         <div class="row mb-5">
           <router-link
+            v-show="!mobile"
             :to="'/products/' + product.id"
             class="col-6 col-md-3 mt-2 produk"
             v-for="product in newArrival"
@@ -17,6 +18,18 @@
           >
             <CardProduct :product="product" />
           </router-link>
+          <div v-show="mobile" class="slide-wrapper">
+            <div v-show="mobile" class="slider">
+              <router-link
+                :to="'/products/' + product.id"
+                class="col-6 mt-2 produk"
+                v-for="product in newArrival"
+                :key="product.id"
+              >
+                <CardProduct class="card-product" :product="product" />
+              </router-link>
+            </div>
+          </div>
           <Loading id="loader" style="display: none" />
         </div>
       </div>
@@ -99,9 +112,24 @@ export default {
   data() {
     return {
       newArrival: [],
+      mobile: null,
+      windowWidth: null
     };
   },
+  created() {
+    window.addEventListener("resize", this.checkScreen)
+    this.checkScreen();
+  },
   methods: {
+    checkScreen() {
+      this.windowWidth = window.innerWidth;
+      if (this.windowWidth < 576) {
+        this.mobile = true;
+        return;
+      }
+        this.mobile = false;
+        return;
+    },
     async NewArrival() {
       try{
         const loader = document.querySelector('#loader')
@@ -178,9 +206,10 @@ export default {
   color: #fff;
 }
 
-.deskripsi {
-  color: #fff;
-  text-align: center;
+
+.produk {
+  border-radius: 10px;
+  width: 500px;
 }
 
 .title-benefit {
@@ -216,7 +245,6 @@ export default {
 }
 
 .card-deck .card:hover {
-  /* border: 1px solid rgb(0, 191, 166); */
   box-shadow: 0px 15px 30px 1px rgba(0, 0, 0, 0.1);
   transform: translateY(-15px);
 }
@@ -245,7 +273,39 @@ export default {
 
 @media screen and (max-width: 576px) {
     .arrival::after {
-    font-size: 44px;
-  }
+      font-size: 44px;
+    }
+
+    .produk {
+      padding-left: 5px;
+    }
+
+    .slide-wrapper {
+      max-width: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .slider {
+      width: 100%;
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .slider::-webkit-scrollbar {
+      display: none;
+    }
+
+    .card-product {
+      object-fit: cover;
+      min-width: 100%;
+      max-height: 100%;
+      cursor: pointer;
+      margin: 5px;
+      transition: 0.2s;
+    }
 }
 </style>

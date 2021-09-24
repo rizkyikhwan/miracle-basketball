@@ -91,7 +91,7 @@ import Loading from "@/components/Loading.vue";
 import LoadingPage from "@/components/LoadingPage.vue";
 import Alert from "@/components/Alert.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { db } from "@/firebase/config";
+import { db, dbAuth } from "@/firebase/config";
 
 export default {
   name: "ProductDetail",
@@ -128,7 +128,7 @@ export default {
           this.loadingPage = true;
           const timestamp = await Date.now()
           await db
-            .collection("carts").doc()
+            .collection(dbAuth.currentUser.uid).doc()
             .set({
               ...this.order,
               profileId: this.profileId,
@@ -145,7 +145,14 @@ export default {
             });
             this.loadingPage =false;
         } catch (err) {
-          console.log(err);
+          this.$toast.warning("You must login first", {
+                type: "warning",
+                position: "top-right",
+                duration: 3000,
+                dismissible: true,
+              });
+          this.loadingPage = false;
+          // console.log(err);
         }
       } else {
         this.error = true;
@@ -208,11 +215,11 @@ export default {
     const buttonRight = document.getElementById('slideRight')
     const buttonLeft = document.getElementById('slideLeft')
 
-    buttonLeft.addEventListener('click', function () {
+    buttonLeft.addEventListener('mouseover', function () {
       document.getElementById('slider').scrollLeft -= 50
     })
 
-    buttonRight.addEventListener('click', function () {
+    buttonRight.addEventListener('mouseover', function () {
       document.getElementById('slider').scrollLeft += 50
     })
 
@@ -290,7 +297,13 @@ export default {
   width: 440px;
   display: flex;
   flex-wrap: nowrap;
-  overflow-x: hidden;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+#slider::-webkit-scrollbar {
+  display: none;
 }
 
 .arrow {

@@ -2,19 +2,19 @@
   <div class="product">
     <Navbar />
     <div class="container mt-5">
-      <div class="line"></div>
-      <h2>Best <strong>Seller</strong></h2>
+      <div class="line center"></div>
+      <h2 class="title-best-seller">Best <strong>Seller</strong></h2>
       <div v-if="error">{{ error }}</div>
       <transition-group
         appear
         tag="div"
-        class="row mb-5"
+        class="row mb-5 d-flex justify-content-center"
         @before-enter="beforeEnter"
         @enter="enter"
       >
         <router-link
           :to="'/products/' + product.id"
-          class="col-6 col-md-4 mt-2 produk"
+          class="col-6 col-md-3 mt-2 produk"
           v-for="(product, index) in bestproducts"
           :key="product.id"
           :data-index="index"
@@ -203,8 +203,26 @@ h2 {
   font-family: "Rajdhani", sans-serif;
 }
 
-[type="radio"] {
-  display: none;
+.center {
+  margin: 0 auto 10px;
+}
+
+.title-best-seller {
+  text-align: center;
+}
+
+.title-best-seller::after {
+  content: "Best Seller";
+  font-family: "Montserrat", sans-serif;
+  position: absolute;
+  font-size: 60px;
+  transform: translateX(-255px);
+  font-weight: 800;
+  letter-spacing: 5px;
+  line-height: 0.3;
+  color: rgb(243, 244, 248);
+  margin-top: 20px;
+  z-index: -1;
 }
 
 .search[type="search"] {
@@ -251,6 +269,12 @@ h2 {
     padding: 10px 20px 10px 40px;
     transition: width 0.4s ease-in-out;
   }
+
+  .title-best-seller::after {
+    font-size: 50px;
+    letter-spacing: 2px;
+    transform: translateX(-220px);
+  }
 }
 
 @media (max-width: 768px) {
@@ -258,6 +282,10 @@ h2 {
     display: flex;
       justify-content: start;
       margin-bottom: 10px;
-    }
+  }
+
+  .title-best-seller::after {
+    display: none;
+  }
 }
 </style>

@@ -40,8 +40,9 @@ https://user-images.githubusercontent.com/79355239/135502816-6a32a5b0-7832-417f-
 
 Screenshot on profile page and cart page :
 
+<!--
 ![Screenshot 2021-09-30 235112](https://user-images.githubusercontent.com/79355239/135501458-0dc42b1b-44d5-48c8-95ba-21195571ed9d.jpg)
-![Screenshot 2021-09-30 235215](https://user-images.githubusercontent.com/79355239/135501593-cb976a63-c14c-4be3-be90-0a294b062770.jpg)
+![Screenshot 2021-09-30 235215](https://user-images.githubusercontent.com/79355239/135501593-cb976a63-c14c-4be3-be90-0a294b062770.jpg) -->
 
 ### API
 

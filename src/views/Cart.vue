@@ -4,7 +4,7 @@
     <Navbar :updateCart="carts" />
     <div class="container">
       <nav aria-label="breadcrumb mt-2">
-        <ol class="breadcrumb bg-transparent">
+        <ol class="breadcrumb arrow-right bg-transparent">
           <li class="breadcrumb-item">
             <router-link to="/" class="item">Home</router-link>
           </li>
@@ -52,13 +52,32 @@
                     <p class="card-text">
                       Rp {{ formatPrice(cart.product.harga) }}
                     </p>
-                    <p>Size: {{ cart.size }}</p>
+                    <div class="size-shoes-wrap">
+                    <p style="margin-bottom: 0">Size : </p>
+                    <select class="form-control select" v-model="cart.size">
+                      <option
+                        v-for="product in productsize"
+                        :key="product.size"
+                      >
+                        {{ product.size }}
+                      </option>
+                    </select>
+                    </div>
                     <div class="d-flex justify-content-between">
-                      <p>Quantity: {{ cart.order_quantity }}</p>
+                      <p>Quantity : </p>
+                      <div class="btn-quantity-wrap">
+                        <button class="btn-quantity" @click="cart.quantity === 1 ? 1 : cart.quantity --">
+                          <font-awesome-icon :icon="{prefix: 'fas', iconName: 'minus'}"></font-awesome-icon>
+                        </button>
+                        <span class="quantity">{{ cart.quantity }}</span>
+                        <button class="btn-quantity" @click="cart.quantity === 10 ? 10 : cart.quantity ++">
+                          <font-awesome-icon :icon="{prefix: 'fas', iconName: 'plus'}"></font-awesome-icon>
+                        </button>
+                      </div>
                       <p>
                         Subtotal: Rp
                         {{
-                          formatPrice(cart.product.harga * cart.order_quantity)
+                          formatPrice(cart.product.harga * cart.quantity)
                         }}
                       </p>
                     </div>
@@ -81,7 +100,6 @@
                   <div class="form-group">
                     <textarea
                       class="form-control"
-                      id="exampleFormControlTextarea1"
                       placeholder="Coments"
                       rows="3"
                       v-model="comments"
@@ -110,7 +128,7 @@
             </div>
           </div>
         </tab-content>
-        <tab-content title="Details" :before-change="inputForm">
+        <tab-content title="Shipping Address" :before-change="inputForm">
           <div class="row">
             <div class="col-lg-8 col-12 mb-4">
               <div class="card shadow">
@@ -119,7 +137,7 @@
                   <form>
                     <div class="form-row">
                       <div class="form-group col-md-6">
-                        <label for="inputPassword4">Nama Lengkap</label>
+                        <label for="inputFullName">Nama Lengkap</label>
                         <input
                           type="text"
                           class="form-control"
@@ -139,13 +157,31 @@
                     </div>
                     <div class="form-row">
                       <div class="form-group col-md-6">
-                        <label for="inputAddress2">No. Hp</label>
+                        <label for="inputPhoneNumber">No. Hp</label>
                         <input
                           type="number"
                           class="form-control"
                           min="1"
                           disabled
                           v-model="phoneNumber"
+                        />
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label for="inputZip">Provinsi</label>
+                        <select class="form-control" v-model="provinsi" required>
+                          <option v-for="provinsi in provinsis" :key="provinsi.id">
+                            {{ provinsi.nama }}
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group col-md-6">
+                        <label for="inputPhoneNumber">Kota/Kabupaten</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          v-model="kota"
                         />
                       </div>
                       <div class="form-group col-md-6">
@@ -165,11 +201,10 @@
                           class="form-control"
                           v-model="alamat"
                           rows="3"
-                          placeholder="Provinsi, Kabupaten/Kota, ..."
+                          placeholder="Jalan, ..."
                         />
                         <small class="text-muted"
-                          >*Lengkap dengan Provinsi, Kabupaten/Kota,
-                          Kecamatan</small
+                          >*Lengkap dengan Kecamatan</small
                         >
                       </div>
                     </div>
@@ -194,7 +229,7 @@
                     </div>
                     <div class="col-6">
                       <p class="float-right">
-                        {{ cart.order_quantity }} × Rp
+                        {{ cart.quantity }} × Rp
                         {{ formatPrice(cart.product.harga) }}
                       </p>
                     </div>
@@ -336,6 +371,7 @@ import EmptyCart from "@/components/EmptyCart.vue";
 import Loading from "@/components/Loading.vue";
 import LoadingPage from "@/components/LoadingPage.vue";
 import Alert from "@/components/Alert.vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { db, dbAuth } from "@/firebase/config";
 
 export default {
@@ -347,12 +383,17 @@ export default {
     Loading,
     LoadingPage,
     Alert,
+    FontAwesomeIcon
   },
   data() {
     return {
       carts: [],
+      productsize: [],
+      provinsis: [],
       comments: "",
       kurir: "",
+      provinsi: "",
+      kota: "",
       kodepos: "",
       alamat: "",
       errorCourier: null,
@@ -380,6 +421,8 @@ export default {
         this.fullName &&
         this.email &&
         this.phoneNumber &&
+        this.provinsi &&
+        this.kota &&
         this.alamat &&
         this.kodepos
       ) {
@@ -394,36 +437,22 @@ export default {
       this.errorInputForm = false
     },
     async deleteOrder(id) {
-      this.$swal
-        .fire({
-          title: "Are you sure?",
-          text: "You won't be able to revert this!",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#d33",
-          cancelButtonColor: "#3085d6",
-          confirmButtonText: "Yes, delete it!",
-        })
-        .then(async (result) => {
-          if (result.isConfirmed) {
-            this.loadingPage = true
-            await db
-              .collection(dbAuth.currentUser.uid)
-              .doc(id)
-              .delete()
-              .then(() => {
-                this.Carts();
-              });
-
-            this.loadingPage = false
-            this.$toast.error("Your order was deleted", {
-              type: "error",
-              position: "top-right",
-              duration: 3000,
-              dismissible: true,
-            })
-          }
+      this.loadingPage = true
+      await db
+        .collection(dbAuth.currentUser.uid)
+        .doc(id)
+        .delete()
+        .then(() => {
+          this.Carts();
         });
+      this.loadingPage = false
+      this.$toast.error("Your order was deleted", 
+      {
+        type: "error",
+        position: "top-right",
+        duration: 3000,
+        dismissible: true,
+      });
     },
     async orders() {
       if (
@@ -431,6 +460,8 @@ export default {
         this.fullName &&
         this.email &&
         this.phoneNumber &&
+        this.provinsi &&
+        this.kota &&
         this.alamat &&
         this.kodepos
       ) {
@@ -444,6 +475,8 @@ export default {
               fullName: this.fullName,
               email: this.email,
               phoneNumber: this.phoneNumber,
+              provinsi: this.provinsi,
+              kota: this.kota,
               kodepos: this.kodepos,
               alamat: this.alamat,
             })
@@ -486,17 +519,47 @@ export default {
         loader.style.display = "none";
         cartEmpty.style.display = "none";
       } catch (err) {
+        // console.log(err);
+      }
+    },
+    async sizeShoes() {
+      try {
+        const res = await db.collection("size-shoes").get()
+
+        this.productsize = res.docs.map((doc) => {
+          return {
+            ...doc.data(),
+            id: doc.id
+          }
+        })
+      }
+      catch (err) {
         console.log(err);
       }
     },
+    async dataProvinsi() {
+      try {
+        fetch('https://dev.farizdotid.com/api/daerahindonesia/provinsi')
+        .then((res) => res.json())
+        .then((data) => (this.provinsis = data.provinsi))
+        .catch((error) => console.log(error))
+      }
+      catch (err) {
+        console.log(err);
+      }
+    }
   },
   mounted() {
     this.Carts();
+
+    this.sizeShoes()
+
+    this.dataProvinsi();
   },
   computed: {
     setTotal() {
       return this.carts.reduce((items, data) => {
-        return items + data.product.harga * data.order_quantity;
+        return items + data.product.harga * data.quantity;
       }, 0);
     },
     firstName: {
@@ -529,11 +592,15 @@ export default {
 <style scoped>
 .card {
   border-radius: 10px;
-  border: none;
+  /* border: 1px solid #00bfa6; */
 }
 
 .card-title {
   margin-bottom: 0;
+}
+
+.img-product {
+  border-radius: 10px 0 0 10px;
 }
 
 .label {
@@ -562,6 +629,7 @@ export default {
   height: 25px;
   top: 10px;
   width: auto;
+  color: #d23f57;
 }
 
 .breadcrumb-item.active {
@@ -574,9 +642,60 @@ export default {
   color: #00bfa6;
 }
 
+.size-shoes-wrap {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.select {
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-radius: 0;;
+  padding: 0 0 0 5px;
+  color: #000;
+  text-align: center;
+  width: 15%;
+  height: 15%;
+}
+
+.quantity {
+  text-align: center;
+  padding: 0 5px;
+  width: 25px;
+}
+
+.btn-quantity-wrap {
+  position: absolute;
+  display: flex;
+  gap: 10px;
+  width: 50%;
+  transform: translateY(25px);
+}
+
+.btn-quantity {
+  border: 0;
+  width: 25px;
+  height: 25px;
+  background-color: #fff;
+  font-size: 14px;
+  color: #00bfa6;
+}
+
+.btn-quantity:nth-child(1) {
+  margin-left: 0;
+}
+
 @media (max-width: 528px) {
   .img-product {
-    border-radius: 0 0 5px 0;
+    border-radius: 10px 0 5px 0;
+  }
+
+  .select {
+    width: 20%;
+    text-align: start;
   }
 }
 </style>

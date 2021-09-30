@@ -6,7 +6,7 @@
       <div class="row">
         <div class="col">
           <nav aria-label="breadcrumb">
-            <ol class="breadcrumb bg-transparent">
+            <ol class="breadcrumb arrow-right bg-transparent">
               <li class="breadcrumb-item">
                 <router-link to="/" class="item">Home</router-link>
               </li>
@@ -32,7 +32,7 @@
               :alt="product.gambar"
             />
             <div id="slide-wrapper" class="mb-5">
-              <font-awesome-icon icon="chevron-left" id="slideLeft" class="arrow"></font-awesome-icon>
+              <font-awesome-icon icon="chevron-left" id="slideLeft" class="arrow" @click="slideLeft"></font-awesome-icon>
               <div id="slider">
                 <img :src="'../assets/images/' + product.gambar" class="img-fluid shadow-sm produk-img thumbnail">
                 <img :src="'../assets/images/' + product.gambar1" class="img-fluid shadow-sm produk-img thumbnail">
@@ -40,7 +40,7 @@
                 <img :src="'../assets/images/' + product.gambar3" class="img-fluid shadow-sm produk-img thumbnail">
                 <img :src="'../assets/images/' + product.gambar4" class="img-fluid shadow-sm produk-img thumbnail">
               </div>
-              <font-awesome-icon icon="chevron-right" id="slideRight" class="arrow"></font-awesome-icon>
+              <font-awesome-icon icon="chevron-right" id="slideRight" class="arrow" @click="slideRight"></font-awesome-icon>
             </div>
           </div>
           <div class="col-md-6">
@@ -49,27 +49,27 @@
             <form class="mt-5" v-on:submit.prevent>
               <div class="form-group">
                 <label for="order_quantity">Quantity</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  min="1"
-                  value="1"
-                  max="10"
-                  v-model="order.order_quantity"
-                />
+                <div class="d-flex justify-content-start">
+                <button class="btn-quantity" @click="decrement">
+                  <font-awesome-icon :icon="{prefix: 'fas', iconName: 'minus'}"></font-awesome-icon>
+                </button>
+                <span class="quantity">{{ order.quantity }}</span>
+                <button class="btn-quantity"  @click="increment">
+                  <font-awesome-icon :icon="{prefix: 'fas', iconName: 'plus'}"></font-awesome-icon>
+                </button>
+                </div>
                 <small class="text-muted">Max: 10</small>
               </div>
-              <div class="form-group">
                 <label for="size">Size</label>
-                <select class="form-control" v-model="order.size">
+                <select class="form-control select" v-model="order.size">
                   <option
                     v-for="product in productsize"
                     :key="product.size"
-                    :product="product"
                   >
                     {{ product.size }}
                   </option>
                 </select>
+              <div class="form-group">
               </div>
               <transition name="alert">
                 <Alert v-if="error" :errorMsg="errorMsg" @closeAlert="closeAlert()" />
@@ -106,7 +106,9 @@ export default {
     return {
       product: {},
       productsize: [],
-      order: {},
+      order: {
+        quantity: 1
+      },
       error: null,
       errorMsg: "",
       arrowImg: null,
@@ -121,15 +123,26 @@ export default {
     closeAlert() {
       this.error = false
     },
+    increment() {
+      this.order.quantity = this.order.quantity === 10 ? 10 : this.order.quantity + 1;
+    },
+    decrement() {
+      this.order.quantity = this.order.quantity === 1 ? 1 : this.order.quantity - 1
+    },
+    slideLeft() {
+      document.getElementById('slider').scrollLeft -= 150
+    },
+    slideRight() {
+      document.getElementById('slider').scrollLeft += 150
+    },
     async addToCart() {
-      if (this.order.order_quantity <= 10 && this.order.size) {
+      if (this.order.quantity && this.order.size) {
         this.order.product = this.product;
         try {
           this.loadingPage = true;
           const timestamp = await Date.now()
-          await db
-            .collection(dbAuth.currentUser.uid).doc()
-            .set({
+          const dataBase = await db.collection(dbAuth.currentUser.uid).doc()
+          await dataBase.set({
               ...this.order,
               profileId: this.profileId,
               date: timestamp
@@ -211,18 +224,6 @@ export default {
         document.getElementById('featured').src = this.src
       })
     }
-
-    const buttonRight = document.getElementById('slideRight')
-    const buttonLeft = document.getElementById('slideLeft')
-
-    buttonLeft.addEventListener('mouseover', function () {
-      document.getElementById('slider').scrollLeft -= 50
-    })
-
-    buttonRight.addEventListener('mouseover', function () {
-      document.getElementById('slider').scrollLeft += 50
-    })
-
   },
   computed: {
     profileId() {
@@ -263,6 +264,38 @@ export default {
   color: #fff;
 }
 
+.quantity {
+  text-align: center;
+  padding: 0 10px;;
+  border-bottom: 2px solid #00bfa6;
+  width: 50px;
+}
+
+.btn-quantity {
+  border: 2px solid #009783;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  background-color: #fff;
+  font-size: 16px;
+  color: #00bfa6;
+  margin: 0 10px;
+}
+
+.btn-quantity:nth-child(1) {
+  margin-left: 0;
+}
+
+.select {
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  border-bottom-width: 2px;
+  width: 25%;
+  text-align: center;
+}
+
 .produk-img {
   border-radius: 10px;
   width: 500px;
@@ -300,6 +333,7 @@ export default {
   overflow-x: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
+  scroll-behavior: smooth;
 }
 
 #slider::-webkit-scrollbar {

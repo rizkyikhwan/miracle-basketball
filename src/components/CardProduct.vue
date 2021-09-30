@@ -11,7 +11,7 @@
     </div>
     <img
       :src="'../assets/images/' + product.gambar"
-      class="card-img-top blur"
+      class="card-img-top"
       :alt="product.gambar"
     />
     <div class="card-body text-left">
@@ -94,8 +94,10 @@ export default {
   font-weight: 700;
   letter-spacing: 1px;
   border-radius: 10px 10px 5px 5px;
-  box-shadow: 2px 2px 30px rgba(0, 0, 0, 0.2);
-  transform: translateY(250%);
+  box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
+  transform: translateY(375%);
+  transition: .35s ease;
+  z-index: 99;
 }
 
 .overlay-card {
@@ -105,6 +107,15 @@ export default {
 .card:hover .overlay-card {
   visibility: visible;
   animation: fade 0.3s ease;
+  background: rgba( 255, 255, 255, 0.6 );
+  backdrop-filter: blur( 3px );
+  -webkit-backdrop-filter: blur( 3px );
+}
+
+.card:hover .detail-btn {
+  transform: translateY(250%);
+  backdrop-filter: blur( 3px );
+  -webkit-backdrop-filter: blur( 3px );
 }
 
 @keyframes fade {

@@ -256,4 +256,10 @@ button:hover {
     left: 50px;
   }
 }
+
+@media (max-width: 376px) {
+  .icon {
+    left: 30px;
+  }
+}
 </style>

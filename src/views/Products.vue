@@ -13,7 +13,7 @@
         @enter="enter"
       >
         <router-link
-          :to="'/products/' + product.id"
+          :to="{name: 'ProductDetail', params: {id: product.id, title: product.nama }}"
           class="col-6 col-md-3 mt-2 produk"
           v-for="(product, index) in bestproducts"
           :key="product.id"
@@ -37,6 +37,7 @@
                 aria-label="Search"
                 aria-describedby="addon-wrapping"
               />
+              <font-awesome-icon class="search-icon" icon="search"></font-awesome-icon>
             </div>
           </div>
         </div>
@@ -69,7 +70,7 @@
         v-if="allproducts.length"
       >
         <router-link
-          :to="'/products/' + product.id"
+          :to="{name: 'ProductDetail', params: { id: product.id, title: product.nama }}"
           class="col-6 col-md-3 mt-2 produk"
           v-for="(product, index) in filterProducts"
           :key="product.id"
@@ -79,7 +80,7 @@
         </router-link>
       </transition-group>
       <Loading v-else />
-      <NotFound id="searchNotFound" v-show="filterProducts.length == 0" />
+      <NotFound id="searchNotFound" v-if="filterProducts.length === 0" />
     </div>
   </div>
 </template>
@@ -89,6 +90,7 @@ import Navbar from "@/components/Navbar.vue";
 import CardProduct from "@/components/CardProduct.vue";
 import NotFound from "@/components/SearchNotFound.vue";
 import Loading from "@/components/Loading.vue"
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { db } from "@/firebase/config"
 import gsap from "gsap";
 
@@ -98,7 +100,8 @@ export default {
     Navbar,
     CardProduct,
     NotFound,
-    Loading
+    Loading,
+    FontAwesomeIcon
   },
   data() {
     return {
@@ -242,6 +245,13 @@ h2 {
   border-color: #00bfa6;
 }
 
+.search-icon {
+  position: absolute;
+  color: #ccc;
+  top: 15px;
+  left: 15px;
+}
+
 .title-category {
   margin-right: 10px;
   margin-top: 10px;
@@ -253,9 +263,18 @@ h2 {
   margin-bottom: 15px;
 }
 
-.active {
-  background-color: #00bfa6;
-  color: #fff;
+.select {
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  border-bottom-width: 2px;
+  width: 100%;
+  text-align: center;
+}
+
+.form-control {
+  box-shadow: none;
 }
 
 @media (max-width: 992px) {
@@ -278,14 +297,24 @@ h2 {
 }
 
 @media (max-width: 768px) {
-  .filterBrand {
-    display: flex;
-      justify-content: start;
-      margin-bottom: 10px;
-  }
-
+  
   .title-best-seller::after {
     display: none;
+  }
+
+  .produk {
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .filterBrand {
+    display: flex;
+    justify-content: start;
+    margin-bottom: 10px;
+  }
+  .produk {
+    padding: 0 10px;
   }
 }
 </style>

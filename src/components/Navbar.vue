@@ -9,8 +9,8 @@
       </div>
       <!-- Desktop -->
       <div class="nav-links" v-show="!mobile">
-        <router-link class="link" to="/">Home</router-link>
-        <router-link class="link" to="/product">Products</router-link>
+        <router-link class="link" :to="{name: 'Home'}">Home</router-link>
+        <router-link class="link" :to="{name: 'Products'}">Products</router-link>
         <a class="link" @click="toggleCartNav"
           >Cart <b-icon-bag></b-icon-bag
           ><span class="badge badge-success ml-2" style="position: absolute" v-if="carts.length">{{
@@ -36,8 +36,8 @@
                 <tbody>
                   <tr v-for="cart in carts" :key="cart.id">
                     <td>
-                      {{ cart.order_quantity }}x
-                      <br />
+                      {{ cart.quantity }}x
+                      <br>
                       <b-icon-trash
                         class="text-danger"
                         style="cursor: pointer"
@@ -53,15 +53,18 @@
                       />
                     </td>
                     <td>
-                      <div class="row">
-                        <div class="col">
-                          <p style="font-size: 12px">
-                            {{ cart.product.nama }}
-                          </p>
-                          <p style="font-size: 12px">
-                            Rp {{ formatPrice(cart.product.harga) }}
-                          </p>
-                        </div>
+                      <div class="col">
+                        <p style="font-size: 12px">
+                          {{ cart.product.nama }}
+                        </p>
+                        <p style="font-size: 12px">
+                          Rp {{ formatPrice(cart.product.harga) }}
+                        </p>
+                      </div>
+                      <div class="col">
+                        <p style="font-size: 12px">
+                          Size: {{ cart.size }}
+                        </p>
                       </div>
                     </td>
                   </tr>
@@ -108,11 +111,9 @@
         <span>{{ this.$store.state.profileInitials }}</span>
         <transition name="fadeInTop">
           <div v-show="profileMenu" class="profile-menu">
-          <div class="triangle"></div>
             <div class="info">
               <p class="initials">{{ this.$store.state.profileInitials }}</p>
-              <div class="right">
-                <p class="identity">Hello!</p>
+              <div class="profile-identity">
                 <p class="identity">{{ this.$store.state.profileFirstName }} {{ this.$store.state.profileLastName }}</p>
                 <p class="identity">{{ this.$store.state.profileEmail }}</p>
               </div>
@@ -147,8 +148,8 @@
     </transition>
     <transition name="mobile-nav">
       <ul class="mobile-nav" v-show="mobileNav">
-        <router-link class="link-mobile" to="/">Home</router-link>
-        <router-link class="link-mobile" to="/product">Products</router-link>
+        <router-link class="link-mobile" :to="{name: 'Home'}">Home</router-link>
+        <router-link class="link-mobile" :to="{name: 'Products'}">Products</router-link>
         <a
           class="link-mobile"
           style="cursor: pointer"
@@ -197,7 +198,7 @@
                 <tbody>
                   <tr v-for="cart in carts" :key="cart.id">
                     <td>
-                      {{ cart.order_quantity }}x
+                      {{ cart.quantity }}x
                       <br />
                       <b-icon-trash
                         class="text-danger"
@@ -214,15 +215,18 @@
                       />
                     </td>
                     <td>
-                      <div class="row">
-                        <div class="col">
-                          <p style="font-size: 12px">
-                            {{ cart.product.nama }}
-                          </p>
-                          <p style="font-size: 12px">
-                            Rp {{ formatPrice(cart.product.harga) }}
-                          </p>
-                        </div>
+                      <div class="col">
+                        <p style="font-size: 10px">
+                          {{ cart.product.nama }}
+                        </p>
+                        <p style="font-size: 10px">
+                          Rp {{ formatPrice(cart.product.harga) }}
+                        </p>
+                      </div>
+                      <div class="col">
+                        <p style="font-size: 10px">
+                          Size: {{ cart.size }}
+                        </p>
                       </div>
                     </td>
                   </tr>
@@ -284,7 +288,6 @@ export default {
   },
   data() {
     return {
-      order_quantity: [],
       carts: [],
       login: null,
       register: null,
@@ -378,46 +381,30 @@ export default {
       }
     },
     async deleteOrder(id) {
-      this.$swal
-        .fire({
-          title: "Are you sure?",
-          text: "You won't be able to revert this!",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#d33",
-          cancelButtonColor: "#3085d6",
-          confirmButtonText: "Yes, delete it!",
-        })
-        .then(async (result) => {
-          if (result.isConfirmed) {
-            try {
-              this.loadingPage = true
-              await db
-                .collection(dbAuth.currentUser.uid)
-                .doc(id)
-                .delete()
-                .then(() => {
-                  this.Carts();
-                });
-              this.loadingPage = false
-            } catch (err) {
-              console.log(err);
-            }
-            this.$toast.error("Your order was deleted", {
-              type: "error",
-              position: "top-right",
-              duration: 3000,
-              dismissible: true,
-            })
-          }
-        });
+      try {
+        this.loadingPage = true
+        await db
+          .collection(dbAuth.currentUser.uid)
+          .doc(id)
+          .delete()
+          .then(() => {
+            this.Carts();
+          });
+        this.loadingPage = false
+      } catch (err) {
+        console.log(err);
+      }
+      this.$toast.error("Your order was deleted", {
+        type: "error",
+        position: "top-right",
+        duration: 3000,
+        dismissible: true,
+      })
     },
   },
-  async beforeMount() {
-    await this.Carts()
-  },
   mounted() {
-
+    this.Carts()
+    
     let prevScroll = window.pageYOffset;
     window.onscroll = function () {
       let currentScroll = window.pageYOffset;
@@ -428,11 +415,16 @@ export default {
       }
       prevScroll = currentScroll;
     };
+
+    window.addEventListener('scroll', () => {
+      const navbar = document.querySelector('#navbar')
+      navbar.classList.toggle('stick-nav', window.scrollY > 50)
+    })
   },
   computed: {
     setTotal() {
-      return this.carts.reduce(function (items, data) {
-        return items + data.product.harga * data.order_quantity;
+      return this.carts.reduce((items, data) => {
+        return items + data.product.harga * data.quantity;
       }, 0);
     },
     user() {
@@ -484,13 +476,18 @@ export default {
   font-family: "Rajdhani", sans-serif;
   font-size: 18px;
   letter-spacing: 1px;
-  background-color: rgba(255, 255, 255, 0.9);
+  /* background-color: rgba( 255, 255, 255, 0.9 ); */
   padding: 0 25px;
   position: fixed;
   width: 100%;
   top: 0;
   transition: 0.5s ease;
   z-index: 99;
+}
+
+.stick-nav {
+  background-color: rgba(245, 245, 245, 0.9);
+  box-shadow: 0 2px 3px -1px rgba(0, 0, 0, 0.1), 0 2px 4px 1px rgba(0, 0, 0, 0.05);
 }
 
 .nav-links {
@@ -533,32 +530,26 @@ export default {
   pointer-events: none;
 }
 
-.triangle {
-  position: absolute;
-  top: -8px;
-  left: 221px;
-  height: 0;
-  width: 0;
-  border-bottom: 15px solid #303030;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-}
-
 .profile-menu {
   position: absolute;
-  top: 50px;
-  right: 0;
-  width: 250px;
-  background-color: #303030;
+  top: 45px;
+  right: -10px;
+  width: 225px;
+  border-radius: 7px;
+  background-color: rgba( 48, 48, 48, 0.8 );
+  backdrop-filter: blur( 4px );
+  -webkit-backdrop-filter: blur( 4px );
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px 1px rgba(0, 0, 0, 0.06);
 }
 
 .info {
   display: flex;
+  flex-direction: column;
   cursor: default;
   align-items: center;
   padding: 15px;
-  border-bottom: 1px solid #fff;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
 }
 
 .initials {
@@ -573,16 +564,15 @@ export default {
   background-color: #fff;
 }
 
-.right {
-  flex: 1;
-  margin-left: 24px;
+.profile-identity {
+  margin-top: 10px;
 }
 
-.right .identity:nth-child(1) {
-  font-size: 14px;
+.profile-identity .identity:nth-child(1) {
+  font-size: 16px;
 }
 
-.right .identity:nth-child(2), .identity:nth-child(3) {
+.profile-identity .identity:nth-child(2) {
   font-size: 12px;
 }
 
@@ -747,7 +737,11 @@ p {
   background-color: #fff;
   top: 0;
   left: 0;
-  z-index: 2;
+  z-index: 9;
+}
+
+.table td {
+  padding: 5px;
 }
 
 .delete-btn {
@@ -782,8 +776,13 @@ p {
   color: #fff;
   font-weight: 500;
   text-align: center;
-  /* box-shadow: inset 0 0 0 0 #00bfa6; */
   text-decoration: none;
   transition: all 0.5s ease;
+}
+
+@media (max-width: 576px) {
+  .stick-nav {
+    background-color: rgba( 255, 255, 255, 0.9 );
+  }
 }
 </style>

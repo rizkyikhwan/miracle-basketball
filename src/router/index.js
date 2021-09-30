@@ -61,7 +61,7 @@ const routes = [
     }
   },
   {
-    path: '/products/:id',
+    path: '/product/:id',
     name: 'ProductDetail',
     component: ProductDetail,
     meta: {
@@ -114,14 +114,18 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from ,next) => {
-  document.title = `${to.meta.title} | Miracle Store`;
+  let documentTitle = `${to.meta.title} | ${process.env.VUE_APP_TITLE}`
+  if (to.params.title) {
+    documentTitle = `${to.params.title} | ${process.env.VUE_APP_TITLE}`
+  }
+  document.title = documentTitle
   next();
 })
 
 router.beforeEach(async (to, from, next) => {
   let user = dbAuth.currentUser;
   if (to.matched.some((res) => res.meta.requireAuth)) {
-    if (user) {
+    if (await user) {
       return next()
     }
     return next({name: 'Login'})

@@ -2,13 +2,10 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
+import { dbAuth } from "@/firebase/config"
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
-import VueSweetalert2 from 'vue-sweetalert2';
-import 'sweetalert2/dist/sweetalert2.min.css';
-import jQuery from "jquery";
-global.jQuery = jQuery;
 import VueToast from "vue-toast-notification";
 import "vue-toast-notification/dist/theme-sugar.css";
 import VueFormWizard from 'vue-form-wizard'
@@ -23,14 +20,16 @@ import {
   faMapMarkedAlt,
   faSearch,
   faShoppingCart,
-  faChevronUp,
   faChevronLeft,
   faChevronRight,
   faLock,
   faSignOutAlt,
   faPhoneAlt,
   faUserCircle,
-  faEdit
+  faEdit,
+  faPlus,
+  faMinus,
+  faLongArrowAltLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faFacebook,
@@ -38,7 +37,9 @@ import {
   faTwitter,
   faWhatsapp,
   faLine,
-  faDiscord
+  faDiscord,
+  faGithub,
+  faLinkedinIn
 } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope, faUser, faIdBadge, faEye } from "@fortawesome/free-regular-svg-icons";
 import "./assets/css/main.css";
@@ -56,7 +57,8 @@ library.add(
   faSearch,
   faShoppingCart,
   faDiscord,
-  faChevronUp,
+  faGithub,
+  faLinkedinIn,
   faChevronLeft,
   faChevronRight,
   faEnvelope,
@@ -67,21 +69,27 @@ library.add(
   faPhoneAlt,
   faUserCircle,
   faEdit,
-  faEye
+  faEye,
+  faPlus,
+  faMinus,
+  faLongArrowAltLeft,
 );
 
 Vue.use(VueToast);
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
-Vue.use(VueSweetalert2);
 Vue.use(VueFormWizard);
 Vue.use(Vuesax);
 
 Vue.config.productionTip = false;
 
-new Vue({
-  router,
-  store,
-  render: (h) => h(App),
-}).$mount("#app");
-
+let app;
+dbAuth.onAuthStateChanged(() => {
+  if (!app) {
+    new Vue({
+      router,
+      store,
+      render: (h) => h(App),
+    }).$mount("#app");
+  }
+})

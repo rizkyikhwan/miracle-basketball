@@ -4,6 +4,7 @@
     <div class="background"></div>
     <form class="login">
       <div class="angle"></div>
+      <router-link class="back-home mb-3" :to="{name: 'Home'}"><font-awesome-icon icon="long-arrow-alt-left"></font-awesome-icon> Home</router-link>
       <p class="login-register">
         Don't have an account?
         <router-link class="router-link" :to="{name: 'Register'}">Register</router-link>
@@ -23,6 +24,7 @@
       </div>
       <router-link class="forgot-password" :to="{name: 'ForgotPassword'}">Forgot your passowrd?</router-link>
       <button @click.prevent="signIn">Sign In</button>
+      
     </form>
   </div>
 </template>
@@ -196,6 +198,17 @@ button:hover {
   height: 101%;
 }
 
+.back-home {
+  color: #303030;
+  text-decoration: none;
+  transition: 0.2s ease;
+  border-bottom: 1px solid #303030;
+}
+
+.back-home:hover {
+  opacity: 0.6;
+}
+
 @media (min-width: 900px) {
   .form-warp {
     width: 100%;
@@ -212,6 +225,5 @@ button:hover {
   .angle, .background {
     display: initial;
   }
-  
 }
 </style>

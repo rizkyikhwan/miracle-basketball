@@ -49,7 +49,7 @@
             <div id="getHelp" class="tittle-footer">
               <h5><strong>Partner Brand</strong></h5>
               <div style="margin-left: -10px">
-                <a href=""
+                <a href="https://www.nike.com/id/" target="_blank"
                   ><img
                     src="../assets/images/nike.png"
                     alt="nike"
@@ -57,7 +57,7 @@
                     width="29"
                     class="partner-brand"
                 /></a>
-                <a href=""
+                <a href="https://www.adidas.co.id/" target="_blank"
                   ><img
                     src="../assets/images/adidas.png"
                     alt="adidas"
@@ -65,7 +65,7 @@
                     width="30"
                     class="partner-brand"
                 /></a>
-                <a href=""
+                <a href="https://www.nike.com/jordan" target="_blank"
                   ><img
                     src="../assets/images/air-jordan.png"
                     alt="air-jordan"
@@ -73,7 +73,7 @@
                     width="29"
                     class="partner-brand"
                 /></a>
-                <a href=""
+                <a href="https://www.underarmour.co.id/en-id/" target="_blank"
                   ><img
                     src="../assets/images/under-armour.png"
                     alt="under-armour"
@@ -90,15 +90,27 @@
             <div id="getHelp" class="tittle-footer">
               <h5><strong>Bantuan</strong></h5>
               <li class="list">
-                <a href="" class="text">Syarat & Ketentuan</a>
+                <a href="" class="footer-list">
+                  Syarat & Ketentuan
+                </a>
               </li>
               <li class="list">
-                <a href="" class="text">Kebijakan Privasi</a>
+                <a href="" class="footer-list">
+                  Kebijakan Privasi
+                </a>
               </li>
-              <li class="list"><a href="" class="text">Cara beli</a></li>
-              <li class="list"><a href="" class="text">Status pesanan</a></li>
               <li class="list">
-                <a href="" class="text">Konfirmasi pesanan</a>
+                <a href="" class="footer-list">
+                  Cara beli
+                </a>
+              <li class="list">
+                <a href="" class="footer-list">
+                  Status pesanan
+                </a>
+              <li class="list">
+                <a href="" class="footer-list">
+                  Konfirmasi pesanan
+                </a>
               </li>
             </div>
           </div>
@@ -138,8 +150,30 @@
         </div>
       </div>
       <hr />
-      <div class="col text-center" style="color: #d4d4d4">
-        © 2021 Rizky Ikhwan
+      <div class="col text-center copyright">
+        Made with 💖 & ☕ - © 2021 Rizky Ikhwan
+      </div>
+      <div class="row d-flex justify-content-center mt-3 wrap-socials">
+        <div class="col-3 text-center" style="margin-left: 0">
+          <a href="https://twitter.com/rizkykhwan_" target="_blank" class="link">
+            <font-awesome-icon :icon="{prefix: 'fab', iconName: 'twitter'}" class="icon-social"></font-awesome-icon>
+          </a>
+        </div>
+        <div class="col-3 text-center">
+          <a href="https://github.com/rizkyikhwan" target="_blank" class="link">
+            <font-awesome-icon :icon="{prefix: 'fab', iconName: 'github'}" class="icon-social"></font-awesome-icon>
+          </a>
+        </div>
+        <div class="col-3 text-center">
+          <a href="https://www.linkedin.com/in/rizkyikhwan/" target="_blank" class="link">
+            <font-awesome-icon :icon="{prefix: 'fab', iconName: 'linkedin-in'}" class="icon-social"></font-awesome-icon>
+          </a>
+        </div>
+        <div class="col-3 text-center">
+          <a href="https://www.instagram.com/rizkykhwan_/" target="_blank" class="link">
+            <font-awesome-icon :icon="{prefix: 'fab', iconName: 'instagram'}" class="icon-social"></font-awesome-icon>
+          </a>
+        </div>
       </div>
     </div>
   </footer>
@@ -194,14 +228,14 @@ export default {
   text-decoration: none;
 }
 
-.list .text {
+.list .footer-list {
   color: #d4d4d4;
   font-size: 14px;
   text-decoration: none;
   transition: 0.2s ease-out;
 }
 
-.text:hover {
+.footer-list:hover {
   color: #00bfa6;
 }
 
@@ -225,5 +259,30 @@ export default {
 
 hr {
   background-color: #d4d4d4;
+}
+
+.copyright {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #d4d4d4;
+}
+
+.wrap-socials {
+  max-width: 250px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.link {
+  color: #303030;
+  text-decoration: none;
+}
+
+.icon-social {
+  width: 35px;
+  height: 35px;
+  padding: 7.5px;
+  border-radius: 50%;
+  background-color: #fff;
 }
 </style>

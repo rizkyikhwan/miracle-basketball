@@ -11,17 +11,18 @@
         <div class="row mb-5">
           <router-link
             v-show="!mobile"
-            :to="'/products/' + product.id"
+            :to="{name: 'ProductDetail', params: { id: product.id, title: product.nama }}"
             class="col-6 col-md-3 mt-2 produk"
             v-for="product in newArrival"
             :key="product.id"
           >
             <CardProduct :product="product" />
           </router-link>
+          <!-- Slider Mobile -->
           <div v-show="mobile" class="slide-wrapper">
             <div v-show="mobile" class="slider">
               <router-link
-                :to="'/products/' + product.id"
+                :to="{name: 'ProductDetail', params: { id: product.id, title: product.nama }}"
                 class="col-6 mt-2 produk"
                 v-for="product in newArrival"
                 :key="product.id"
@@ -29,7 +30,16 @@
                 <CardProduct class="card-product" :product="product" />
               </router-link>
             </div>
+            <div class="arrow-wrap">
+              <button @click="slideLeft" class="btn-arrow">
+                <font-awesome-icon icon="chevron-left"></font-awesome-icon>
+              </button>
+              <button @click="slideRight" class="btn-arrow">
+                <font-awesome-icon icon="chevron-right"></font-awesome-icon>
+              </button>
+            </div>
           </div>
+          <!-- Slider Mobile -->
           <Loading id="loader" style="display: none" />
         </div>
       </div>
@@ -130,6 +140,12 @@ export default {
         this.mobile = false;
         return;
     },
+    slideLeft() {
+      document.querySelector('.slider').scrollLeft -= 210
+    },
+    slideRight() {
+      document.querySelector('.slider').scrollLeft += 210
+    },
     async NewArrival() {
       try{
         const loader = document.querySelector('#loader')
@@ -228,6 +244,8 @@ export default {
   box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.1);
   transition: 0.3s ease-out;
   background: rgba(0, 191, 166, 0.2);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   overflow: hidden;
 }
 
@@ -293,6 +311,7 @@ export default {
       overflow-x: auto;
       -ms-overflow-style: none;
       scrollbar-width: none;
+      scroll-behavior: smooth;
     }
 
     .slider::-webkit-scrollbar {
@@ -306,6 +325,24 @@ export default {
       cursor: pointer;
       margin: 5px;
       transition: 0.2s;
+    }
+
+    .arrow-wrap {
+      display: flex;
+      justify-content: space-between;
+      position: absolute;
+      padding: 0 2px;
+      width: 100%;
+    }
+
+    .btn-arrow {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.2);
+      color: #fff;
+      border: 0;
+      z-index: 9;
     }
 }
 </style>

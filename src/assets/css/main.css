@@ -1,5 +1,4 @@
 #app {
-  /* font-family: "Montserrat", sans-serif; */
   font-family: "Saira Semi Condensed", sans-serif;
   overflow: hidden;
   min-height: 100vh;
@@ -12,6 +11,11 @@
   background-color: #00bfa6;
   border-radius: 10px;
   margin-bottom: 10px;
+}
+
+.arrow-right .breadcrumb-item + .breadcrumb-item::before {
+  content: "›";
+  color: #408080;
 }
 
 .produk:hover {

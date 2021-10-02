@@ -71,9 +71,7 @@
                 </select>
               <div class="form-group">
               </div>
-              <transition name="alert">
-                <Alert v-if="error" :errorMsg="errorMsg" @closeAlert="closeAlert()" />
-              </transition>
+              <Alert v-show="error" :errorMsg="errorMsg" @closeAlert="closeAlert()" />
               <button type="submit" class="button" @click="addToCart">
                 Add to Cart <b-icon-cart-plus></b-icon-cart-plus>
               </button>
@@ -253,22 +251,20 @@ export default {
 
 .button {
   display: inline-block;
+  color: #00bfa6;
+  background-color: #fff;
   border: 2px solid #00bfa6;
   border-top-left-radius: 10px;
   border-bottom-right-radius: 10px;
-  background-color: #fff;
   padding: 9px 18px;
-  color: #00bfa6;
   font-size: 16px;
-  letter-spacing: 1px;
-  font-weight: 500;
-  box-shadow: inset 0 0 0 0 #00bfa6;
-  transition: 0.75s ease-out;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
 }
 
 .button:hover {
-  box-shadow: inset 400px 0 0 0 #00bfa6;
-  color: #fff;
+  box-shadow: 1px 1px #00bfa6, 2px 2px #00bfa6, 3px 3px #00bfa6;
+  transform: translateX(-3px);
 }
 
 .quantity {

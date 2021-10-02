@@ -56,18 +56,24 @@ export default {
 <style scoped>
 .btn {
   display: inline-block;
-  border: 2px solid #00bfa6;
   color: #00bfa6;
-  font-size: 18px;
-  letter-spacing: 1px;
+  background-color: #fff;
+  border: 2px solid #00bfa6;
+  border-top-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 9px 18px;
+  cursor: pointer;
+  font-size: 16px;
   font-weight: 500;
-  box-shadow: inset 0 0 0 0 #00bfa6;
-  transition: 0.5s ease-out;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
 }
 
 .btn:hover {
-  box-shadow: inset 0 -100px 0 0 #00bfa6;
-  color: #fff;
+  color: #00bfa6;
+  box-shadow: 1px 1px #00bfa6, 2px 2px #00bfa6, 3px 3px #00bfa6;
+  transform: translateX(-3px);
 }
 
 </style>

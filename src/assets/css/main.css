@@ -81,8 +81,17 @@
   transition: all 0.2s;
 }
 
+.alert-leave-to {
+  opacity: 0;
+  transform: translateY(-15px);
+}
+
 .alert-enter-active {
   animation: wobble 0.5s ease;
+}
+
+.alert-leave-to {
+  transition: 0.2s ease;
 }
 
 @keyframes wobble {

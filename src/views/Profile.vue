@@ -69,7 +69,13 @@
                     class="icon-profileMenu"
                     :icon="{ prefix: 'fas', iconName: 'sign-out-alt' }"
                   ></font-awesome-icon> Sign Out</button>
-                <button v-show="edit" class="manage-account success" @click="updateProfile">Save Changes</button>
+                <button v-show="edit" class="manage-account success" @click="updateProfile">
+                  <font-awesome-icon 
+                    class="icon-profileMenu" 
+                    :icon="{prefix: 'far', iconName: 'save'}"
+                  ></font-awesome-icon>
+                  Save Changes
+                </button>
               </div>
             </div>
           </div>

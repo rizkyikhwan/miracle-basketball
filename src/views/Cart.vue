@@ -116,13 +116,11 @@
                       <option>SiCepat - Reguler</option>
                     </select>
                   </div>
-                  <transition name="alert">
-                    <Alert
-                      v-if="errorCourier"
-                      :errorMsg="errorMsgSelectCourier"
-                      @closeAlert="closeAlert"
-                    />
-                  </transition>
+                  <Alert
+                    v-show="errorCourier"
+                    :errorMsg="errorMsgSelectCourier"
+                    @closeAlert="closeAlert"
+                  />
                 </div>
               </div>
             </div>
@@ -208,13 +206,11 @@
                         >
                       </div>
                     </div>
-                    <transition name="alert">
-                      <Alert
-                        v-if="errorInputForm"
-                        :errorMsg="errorMsgInputForm"
-                        @closeAlert="closeAlert"
-                      />
-                    </transition>
+                    <Alert
+                      v-show="errorInputForm"
+                      :errorMsg="errorMsgInputForm"
+                      @closeAlert="closeAlert"
+                    />
                   </form>
                 </div>
               </div>
@@ -237,10 +233,10 @@
                   <hr />
                   <div class="row">
                     <div class="col-6">
-                      <p>Total</p>
+                      <p><strong>Total</strong></p>
                     </div>
                     <div class="col-6">
-                      <p class="float-right">Rp {{ formatPrice(setTotal) }}</p>
+                      <p class="float-right"><strong>Rp {{ formatPrice(setTotal) }}</strong></p>
                     </div>
                   </div>
                 </div>
@@ -340,11 +336,11 @@
                   <hr />
                   <div class="row">
                     <div class="col-6">
-                      <p>Total</p>
+                      <p><strong>Total</strong></p>
                     </div>
                     <div class="col-6">
                       <p class="float-right">
-                        Rp {{ formatPrice(setTotal + 18000 + 5000) }}
+                       <strong>Rp {{ formatPrice(setTotal + 18000 + 5000) }}</strong>
                       </p>
                     </div>
                   </div>

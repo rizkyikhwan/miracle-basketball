@@ -206,9 +206,45 @@ button:hover {
   }
 }
 
+@media (max-width: 429px) {
+  .icon {
+    left: 55px;
+  }
+}
+
+@media (max-width: 413px) {
+  .icon {
+    left: 50px;
+  }
+}
+
+@media (max-width: 393px) {
+  .icon {
+    left: 40px;
+  }
+}
+
+@media (max-width: 391px) {
+  .icon {
+    left: 40px;
+  }
+}
+
 @media (max-width: 376px) {
   .icon {
     left: 30px;
+  }
+}
+
+@media (max-width: 361px) {
+  .icon {
+    left: 25px;
+  }
+}
+
+@media (max-width: 361px) {
+  .icon {
+    left: 10px;
   }
 }
 </style>

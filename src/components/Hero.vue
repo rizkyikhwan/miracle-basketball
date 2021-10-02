@@ -118,22 +118,24 @@ export default {
 }
 
 .button {
-  color: rgb(0, 191, 166);
-  border: 2px solid rgb(0, 191, 166);
+  color: #00bfa6;
+  background-color: #fff;
+  border: 2px solid #00bfa6;
   border-top-left-radius: 10px;
   border-bottom-right-radius: 10px;
   padding: 9px 18px;
-  display: inline-block;
-  font-size: 14px;
-  letter-spacing: 1px;
+  cursor: pointer;
+  /* height:32px; */
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
   text-decoration: none;
-  box-shadow: inset 0 0 0 0 #00bfa6;
-  transition: ease-out .75s;
+  transition: all 0.2s ease-in-out;
 }
 
 .button:hover {
-  box-shadow: inset 400px 0 0 0 #00bfa6;
-  color: #fff;
+  box-shadow: 1px 1px #00bfa6, 2px 2px #00bfa6, 3px 3px #00bfa6;
+  transform: translateX(-3px);
 }
 
 .color-box {

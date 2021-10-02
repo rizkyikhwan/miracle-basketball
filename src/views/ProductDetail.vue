@@ -61,7 +61,7 @@
                 <small class="text-muted">Max: 10</small>
               </div>
                 <label for="size">Size</label>
-                <select class="form-control select" v-model="order.size">
+                <select class="form-control select" v-model="order.size" @click="requiredSize">
                   <option
                     v-for="product in productsize"
                     :key="product.size"
@@ -135,6 +135,10 @@ export default {
     slideRight() {
       document.getElementById('slider').scrollLeft += 150
     },
+    requiredSize() {
+      document.querySelector('.select').style = 'border-bottom: 2px solid #00bfa6'
+      this.error = false;
+    },
     async addToCart() {
       if (this.order.quantity && this.order.size) {
         this.order.product = this.product;
@@ -169,7 +173,10 @@ export default {
         }
       } else {
         this.error = true;
-        this.errorMsg = "Please fill in the form correctly!";
+        this.errorMsg = "Please select a size.";
+
+        const require = document.querySelector('.select')
+        require.style = "border-bottom: 2px solid red"
       }
     },
     async getProduct(id) {

@@ -13,8 +13,9 @@ Miracle Store ID is an online store for basketball shoes, ofcourse based in Indo
 So, what the technology i use to development this project :
 
 1. Vue JS 2
-2. Vuex (I'm very newbie in Vuex actually)
-3. Firebase
+2. Vue Router
+3. Vuex (I'm very newbie in Vuex actually)
+4. Firebase
 
 Some libraries i use :
 

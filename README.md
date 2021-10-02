@@ -6,7 +6,7 @@ Miracle Store ID is an online store for basketball shoes, ofcourse based in Indo
 
 > Reminder! there is a my personal project.
 >
-> Finally, my personal project is done. Yuhuuu 🤸‍♂️
+> Finally, my personal project is finished. Yuhuuu 🤸‍♂️
 
 ## Technology i use
 

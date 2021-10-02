@@ -28,6 +28,9 @@
                 <label for="First Name">First Name :</label>
                 <input disabled type="text" id="firstName" v-model="firstName">
                 <font-awesome-icon class="icon" :icon="{ prefix: 'far', iconName: 'user' }"></font-awesome-icon>
+                <transition name="alert">
+                  <div v-if="requireFormName" v-html="nameRequire" class="mt-1"></div>
+                </transition>
               </div>
               <div class="input">
                 <label for="Last Name">Last Name :</label>
@@ -36,14 +39,18 @@
               </div>
               <div class="input">
                 <label for="Phone Number">Phone Number :</label>
-                <input disabled type="text" id="phoneNumber" v-model="phoneNumber">
+                <input disabled type="number" id="phoneNumber" v-model="phoneNumber">
                 <font-awesome-icon class="icon" :icon="{ prefix: 'fas', iconName: 'phone-alt' }"></font-awesome-icon>
+                <transition name="alert">
+                  <div v-if="requireFormNumber" v-html="phoneNumberRequire" class="mt-1"></div>
+                </transition>
               </div>
               <div class="input">
                 <label for="email">Email :</label>
                 <input disabled type="text" id="email" v-model="email">
                 <font-awesome-icon class="icon" :icon="{ prefix: 'far', iconName: 'envelope' }"></font-awesome-icon>
               </div>
+              <Alert v-show="error" :errorMsg="errorMsg" @closeAlert="closeAlert" />
             </div>
           </div>
         </div>
@@ -75,6 +82,7 @@
 <script>
 import Navbar from "@/components/Navbar.vue"
 import Modal from "@/components/Modal.vue"
+import Alert from "@/components/Alert.vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { dbAuth } from "@/firebase/config"
 
@@ -83,6 +91,7 @@ export default {
   components: {
     Navbar,
     Modal,
+    Alert,
     FontAwesomeIcon
   },
   data() {
@@ -90,20 +99,56 @@ export default {
       modalMessage : "Changes were saved!",
       modalActive: null,
       edit: null,
+      error: null,
+      errorMsg: null,
+      requireFormName: null,
+      requireFormNumber: null,
+      nameRequire: null,
+      phoneNumberRequire: null
     }
   },
   methods: {
     updateProfile() {
-      this.$store.dispatch("updateUserSettings")
-      this.modalActive = true
-      
-      // Disable Form
-      document.getElementById('firstName').disabled = true;
-      document.getElementById('lastName').disabled = true;
-      document.getElementById('phoneNumber').disabled = true;
+      if (this.firstName && this.phoneNumber) {
+        this.$store.dispatch("updateUserSettings")
+        this.modalActive = true
+        
+        // Disable Form
+        document.getElementById('firstName').disabled = true;
+        document.getElementById('lastName').disabled = true;
+        document.getElementById('phoneNumber').disabled = true;
+  
+        this.edit = false
+        this.error = false
+        this.requireFormName = false
+        this.requireFormNumber = false
 
-      this.edit = false;
+        document.getElementById('firstName').style = 'border: none'
+        document.getElementById('phoneNumber').style = 'border: none'
+      } else if (!this.firstName && !this.phoneNumber) {
+        this.error = true
+        this.errorMsg = 'First name and phone number is required'
+
+        document.getElementById('firstName').style = 'border: red solid 1px'
+        document.getElementById('phoneNumber').style = 'border: red solid 1px'
+      } else if (!this.firstName) {
+        this.requireFormName = true
+        this.nameRequire = `<p style="color: red">*First Name is required</p>`
+
+        document.getElementById('firstName').style = 'border: red solid 1px'
+      } else if (!this.phoneNumber) {
+        this.requireFormNumber = true
+        this.phoneNumberRequire = `<p style="color: red">*Phone Number is required</p>`
+
+        document.getElementById('phoneNumber').style = 'border: red solid 1px'
+      }
       
+    },
+    closeAlert() {
+      this.error = !this.error
+
+      document.getElementById('firstName').style = 'border: none'
+      document.getElementById('phoneNumber').style = 'border: none'
     },
     closeModal() {
       this.modalActive = !this.modalActive

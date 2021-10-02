@@ -31,7 +31,7 @@
           <font-awesome-icon class="icon" :icon="{prefix: 'far', iconName: 'envelope'}"></font-awesome-icon>
         </div>
         <transition name="fadeInTop">
-          <p class="error" v-if="error">{{ errorMsg }}</p>
+          <p class="error" v-if="error" @click="closeError">{{ errorMsg }}</p>
         </transition>
       </div>
       <button @click.prevent="resetPassword">Reset</button>
@@ -81,6 +81,9 @@ export default {
     },
     closeModal() {
       this.modalActive = !this.modalActive
+    },
+    closeError() {
+      this.error = !this.error
     }
   }
 }
@@ -194,6 +197,7 @@ button:hover {
 .error {
   color: red;
   margin-bottom: 0;
+  cursor: pointer;
 }
 
 @media (max-width: 576px) {

@@ -58,7 +58,7 @@
             ></font-awesome-icon>
           </div>
           <transition name="fadeInTop">
-          <p class="error" v-if="error">{{ errorMsg }}</p>
+            <p class="error" v-if="error" @click="closeError">{{ errorMsg }}</p>
           </transition>
         </div>
         <button @click.prevent="register">Sign Up</button>
@@ -93,6 +93,9 @@ export default {
     FontAwesomeIcon,
   },
   methods: {
+    closeError() {
+      this.error = !this.error
+    },
     async register() {
       try {
         if (this.firstName !== "" && this.lastName !== "" && this.phoneNumber !== "" && this.password !== "") {
@@ -115,10 +118,11 @@ export default {
             this.errorMsg = err.message;
             this.loadingPage = false;
           })
+        } else {
+          this.error = true;
+          this.errorMsg = "Please fill out all the fields!"
+          this.loadingPage = false
         }
-        this.error = true;
-        this.errorMsg = "Please fill out all the fields!"
-        this.loadingPage = false
       }
       catch(err) {
         this.error = true;
@@ -233,6 +237,7 @@ button:hover {
 .error {
   color: red;
   margin-bottom: 0;
+  cursor: pointer;
 }
 
 .modal-content {

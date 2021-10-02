@@ -33,7 +33,7 @@
             ></font-awesome-icon>
           </div>
           <transition name="fadeInTop">
-            <p class="error" v-if="error">{{ errorMsg }}</p>
+            <p class="error" v-if="error" @click="closeError">{{ errorMsg }}</p>
           </transition>
           <a class="forgot-password" @click="$emit('forgotPassowrdAccount')"
             >Forgot your Password?</a
@@ -87,9 +87,9 @@ export default {
         this.loadingPage = false;
       }
     },
-    closeAlert() {
+    closeError() {
       this.error = !this.error
-    }
+    },
   },
 };
 </script>
@@ -198,6 +198,7 @@ button:hover {
 .error {
   color: red;
   margin-bottom: 0;
+  cursor: pointer;
 }
 
 .line {

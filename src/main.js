@@ -22,6 +22,7 @@ import {
   faShoppingCart,
   faChevronLeft,
   faChevronRight,
+  faChevronDown,
   faLock,
   faSignOutAlt,
   faPhoneAlt,
@@ -72,6 +73,7 @@ library.add(
   faPlus,
   faMinus,
   faLongArrowAltLeft,
+  faChevronDown,
 );
 
 Vue.use(VueToast);

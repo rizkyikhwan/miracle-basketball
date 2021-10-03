@@ -103,20 +103,23 @@ export default {
 .overlay-card {
   visibility: hidden;
 }
+  
+@media (min-width: 768px) {
+  .card:hover .overlay-card {
+    visibility: visible;
+    animation: fade 0.3s ease;
+    background: rgba( 255, 255, 255, 0.6 );
+    backdrop-filter: blur( 3px );
+    -webkit-backdrop-filter: blur( 3px );
+  }
 
-.card:hover .overlay-card {
-  visibility: visible;
-  animation: fade 0.3s ease;
-  background: rgba( 255, 255, 255, 0.6 );
-  backdrop-filter: blur( 3px );
-  -webkit-backdrop-filter: blur( 3px );
+  .card:hover .detail-btn {
+    transform: translateY(250%);
+    backdrop-filter: blur( 3px );
+    -webkit-backdrop-filter: blur( 3px );
+  }
 }
 
-.card:hover .detail-btn {
-  transform: translateY(250%);
-  backdrop-filter: blur( 3px );
-  -webkit-backdrop-filter: blur( 3px );
-}
 
 @keyframes fade {
   0% {

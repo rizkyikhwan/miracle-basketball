@@ -63,12 +63,14 @@
                 <label for="size">Size</label>
                 <select class="form-control select" v-model="order.size" @click="requiredSize">
                   <option
+                    class="option"
                     v-for="product in productsize"
                     :key="product.size"
                   >
                     {{ product.size }}
                   </option>
                 </select>
+                <font-awesome-icon class="icon-chevron" :icon="{prefix: 'fas', iconName: 'chevron-down'}"></font-awesome-icon>
               <div class="form-group">
               </div>
               <Alert v-show="error" :errorMsg="errorMsg" @closeAlert="closeAlert()" />
@@ -276,13 +278,13 @@ export default {
 
 .btn-quantity {
   border: 2px solid #009783;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  border-radius: 5px;
+  padding: 2px 6px;
   background-color: #fff;
   font-size: 16px;
   color: #00bfa6;
   margin: 0 10px;
+   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px 1px rgba(0, 0, 0, 0.06);
 }
 
 .btn-quantity:nth-child(1) {
@@ -302,6 +304,13 @@ export default {
 .produk-img {
   border-radius: 10px;
   width: 500px;
+}
+
+.icon-chevron {
+  position: absolute;
+  transform: translateY(-25px);
+  color: #ccc;
+  font-size: 12px;
 }
 
 .thumbnail {

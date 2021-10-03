@@ -56,12 +56,14 @@
                     <p style="margin-bottom: 0">Size : </p>
                     <select class="form-control select" v-model="cart.size">
                       <option
+                        class="option"
                         v-for="product in productsize"
                         :key="product.size"
                       >
                         {{ product.size }}
                       </option>
                     </select>
+                      <font-awesome-icon class="icon-chevron" :icon="{prefix: 'fas', iconName: 'chevron-down'}"></font-awesome-icon>
                     </div>
                     <div class="d-flex justify-content-between">
                       <p>Quantity : </p>
@@ -648,13 +650,22 @@ export default {
   border-top: 0;
   border-left: 0;
   border-right: 0;
-  border-bottom: 0;
-  border-radius: 0;;
-  padding: 0 0 0 5px;
+ border-bottom-width: 2px;
+  border-radius: 0;
+  padding: 0;
+  margin-left: 5px;
   color: #000;
   text-align: center;
+  max-width: 50px;
   width: 15%;
   height: 15%;
+}
+
+.icon-chevron {
+  position: absolute;
+  color: #ccc;
+  transform: translateX(80px) translateY(5px);
+  font-size: 12px;
 }
 
 .quantity {
@@ -672,9 +683,11 @@ export default {
 }
 
 .btn-quantity {
-  border: 0;
-  width: 25px;
-  height: 25px;
+  border: 2px solid #009783;
+  padding: 0 5px;
+  border-radius: 5px;
+  /* width: 25px;
+  height: 25px; */
   background-color: #fff;
   font-size: 14px;
   color: #00bfa6;
@@ -690,8 +703,7 @@ export default {
   }
 
   .select {
-    width: 20%;
-    text-align: start;
+    width: 100%;
   }
 }
 </style>

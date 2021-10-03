@@ -237,7 +237,6 @@
             <div class="row" v-show="carts.length >= 1">
               <div class="col-12">
                 <router-link
-                  type="button"
                   to="/cart"
                   class="button-checkout shadow"
                   >View Cart<br />(Rp
@@ -405,16 +404,19 @@ export default {
   mounted() {
     this.Carts()
     
-    let prevScroll = window.pageYOffset;
-    window.onscroll = function () {
-      let currentScroll = window.pageYOffset;
-      if (prevScroll > currentScroll) {
-        document.querySelector(".navbar").style.top = "0";
-      } else {
-        document.querySelector(".navbar").style.top = "-100px";
+    this.windowWidth = window.innerWidth;
+      if (this.windowWidth >= 766) {
+        let prevScroll = window.pageYOffset;
+        window.onscroll = function () {
+          let currentScroll = window.pageYOffset;
+          if (prevScroll > currentScroll) {
+            document.querySelector(".navbar").style.top = "0";
+          } else {
+            document.querySelector(".navbar").style.top = "-100px";
+          }
+          prevScroll = currentScroll;
+        };
       }
-      prevScroll = currentScroll;
-    };
 
     window.addEventListener('scroll', () => {
       const navbar = document.querySelector('#navbar')

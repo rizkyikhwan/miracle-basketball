@@ -41,7 +41,7 @@ import {
   faGithub,
   faLinkedinIn
 } from "@fortawesome/free-brands-svg-icons";
-import { faEnvelope, faUser, faIdBadge, faSave } from "@fortawesome/free-regular-svg-icons";
+import { faEnvelope, faUser, faIdBadge } from "@fortawesome/free-regular-svg-icons";
 import "./assets/css/main.css";
 
 library.add(
@@ -72,7 +72,6 @@ library.add(
   faPlus,
   faMinus,
   faLongArrowAltLeft,
-  faSave
 );
 
 Vue.use(VueToast);

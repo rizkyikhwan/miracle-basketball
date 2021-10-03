@@ -13,8 +13,8 @@
             />
             </transition>
             <div class="text-center">
-              <h4>The order is being Packing</h4>
-              <p>Please check your Email to continue a payment</p>
+              <h4>The order is being packing</h4>
+              <p>Silakan periksa Email Anda untuk melanjutkan pembayaran</p>
               <router-link to="/product">
                 <button class="btn">Back to Shop</button>
               </router-link>

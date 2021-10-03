@@ -51,21 +51,19 @@ export default {
 
 .button {
   display: inline-block;
+  color: #00bfa6;
+  background-color: #fff;
   border: 2px solid #00bfa6;
   border-top-left-radius: 10px;
   border-bottom-right-radius: 10px;
-  background-color: #fff;
-  padding: 8px 10px;
-  font-size: 18px;
-  letter-spacing: 1px;
-  color: #00bfa6;
-  font-weight: 500;
-  box-shadow: inset 0 0 0 0 #00bfa6;
-  transition: .75s ease-out;
+  padding: 9px 18px;
+  font-size: 16px;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
 }
 
 .button:hover {
-  box-shadow: inset 0 -100px 0 0 #00bfa6;
-  color: #fff;
+  box-shadow: 1px 1px #00bfa6, 2px 2px #00bfa6, 3px 3px #00bfa6;
+  transform: translateX(-3px);
 }
 </style>

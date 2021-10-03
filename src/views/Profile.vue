@@ -70,10 +70,6 @@
                     :icon="{ prefix: 'fas', iconName: 'sign-out-alt' }"
                   ></font-awesome-icon> Sign Out</button>
                 <button v-show="edit" class="manage-account success" @click="updateProfile">
-                  <font-awesome-icon 
-                    class="icon-profileMenu" 
-                    :icon="{prefix: 'far', iconName: 'save'}"
-                  ></font-awesome-icon>
                   Save Changes
                 </button>
               </div>
@@ -102,7 +98,7 @@ export default {
   },
   data() {
     return {
-      modalMessage : "Changes were saved!",
+      modalMessage : "Perubahan telah disimpan!",
       modalActive: null,
       edit: null,
       error: null,

@@ -49,6 +49,3 @@ Screenshot on profile page and cart page :
 ### API
 
 API provinces from [link to API](https://github.com/farizdotid/DAFTAR-API-LOKAL-INDONESIA)
-
-So, it is a my personal project, sorry the code is disorganized hehe.
-Thanks for your attention 👍

@@ -233,23 +233,23 @@ export default {
     }
 
     let slider = document.getElementById('slider')
-    let isDown = false;
+    let grab = false;
     let startX;
     let scrollLeft;
 
     slider.addEventListener('mousedown', (e) => {
-      isDown = true
+      grab = true
       startX = e.pageX - slider.offsetLeft
       scrollLeft = slider.scrollLeft
     })
     slider.addEventListener('mouseleave', () => {
-      isDown = false
+      grab = false
     })
     slider.addEventListener('mouseup', () => {
-      isDown = false
+      grab = false
     })
     slider.addEventListener('mousemove', (e) => {
-      if(!isDown) {
+      if(!grab) {
         return
       }
       const x = e.pageX - slider.scrollLeft

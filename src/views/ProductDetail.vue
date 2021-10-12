@@ -231,6 +231,30 @@ export default {
         document.getElementById('featured').src = this.src
       })
     }
+
+    let slider = document.getElementById('slider')
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    slider.addEventListener('mousedown', (e) => {
+      isDown = true
+      startX = e.pageX - slider.offsetLeft
+      scrollLeft = slider.scrollLeft
+    })
+    slider.addEventListener('mouseleave', () => {
+      isDown = false
+    })
+    slider.addEventListener('mouseup', () => {
+      isDown = false
+    })
+    slider.addEventListener('mousemove', (e) => {
+      if(!isDown) {
+        return
+      }
+      const x = e.pageX - slider.scrollLeft
+      slider.scrollLeft = scrollLeft - (x - startX)
+    })
   },
   computed: {
     profileId() {
@@ -320,6 +344,8 @@ export default {
   cursor: pointer;
   opacity: 0.5;
   margin: 5px;
+  -moz-user-drag: none; 
+  -webkit-user-drag: none;
   transition: 0.2s;
 }
 
